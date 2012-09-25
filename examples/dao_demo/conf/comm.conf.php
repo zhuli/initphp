@@ -31,34 +31,21 @@ $InitPHP_conf['is_debug'] = true; //开启-正式上线请关闭
  * 4. 支持多库配置 $InitPHP_conf['db_multi']['test']
  * 5. 详细见文档
  */
-$InitPHP_conf['db']['driver']                	 		   = 'mysqli'; //mysql,mysqli 默认必填
-$InitPHP_conf['db']['default']['db_type']				   = 2; //0-单个服务器，1-读写分离，2-随机
+$InitPHP_conf['db']['driver']                	 		   = 'mysql'; //mysql,mysqli 默认必填
+$InitPHP_conf['db']['default']['db_type']				   = 0; //0-单个服务器，1-读写分离，2-随机
 $InitPHP_conf['db']['default'][0]['host']                  = '127.0.0.1'; //主机
 $InitPHP_conf['db']['default'][0]['username']              = 'root'; //数据库用户名
-$InitPHP_conf['db']['default'][0]['password']              = '123456'; //数据库密码
+$InitPHP_conf['db']['default'][0]['password']              = 'root'; //数据库密码
 $InitPHP_conf['db']['default'][0]['database']              = 'test'; //数据库
 $InitPHP_conf['db']['default'][0]['charset']               = 'utf8'; //数据库编码   
 $InitPHP_conf['db']['default'][0]['pconnect']              = 0; //是否持久链接
 
-$InitPHP_conf['db']['default2']['db_type']				   = 1; //0-单个服务器，1-读写分离，2-随机
-$InitPHP_conf['db']['default2'][0]['host']                  = '127.0.0.1'; //主机
-$InitPHP_conf['db']['default2'][0]['username']              = 'root'; //数据库用户名
-$InitPHP_conf['db']['default2'][0]['password']              = '123456'; //数据库密码
-$InitPHP_conf['db']['default2'][0]['database']              = 'test'; //数据库
-$InitPHP_conf['db']['default2'][0]['charset']               = 'utf8'; //数据库编码   
-$InitPHP_conf['db']['default2'][0]['pconnect']              = 0; //是否持久链接
-$InitPHP_conf['db']['default2'][1]['host']                  = '127.0.0.1'; //主机
-$InitPHP_conf['db']['default2'][1]['username']              = 'root'; //数据库用户名
-$InitPHP_conf['db']['default2'][1]['password']              = '123456'; //数据库密码
-$InitPHP_conf['db']['default2'][1]['database']              = 't1'; //数据库
-$InitPHP_conf['db']['default2'][1]['charset']               = 'utf8'; //数据库编码   
-$InitPHP_conf['db']['default2'][1]['pconnect']              = 0; //是否持久链接 
 
-$InitPHP_conf['db']['test2']['db_type']				  	= 0; //0-单个服务器，1-读写分离，2-随机
-$InitPHP_conf['db']['test2'][0]['host']                  = '127.0.0.1'; //主机
+$InitPHP_conf['db']['test2']['db_type']				  	 = 0; //0-单个服务器，1-读写分离，2-随机
+$InitPHP_conf['db']['test2'][0]['host']                  = '127.0.0.1'; //主机 
 $InitPHP_conf['db']['test2'][0]['username']              = 'root'; //数据库用户名
-$InitPHP_conf['db']['test2'][0]['password']              = '123456'; //数据库密码
-$InitPHP_conf['db']['test2'][0]['database']              = 't1'; //数据库
+$InitPHP_conf['db']['test2'][0]['password']              = 'root'; //数据库密码
+$InitPHP_conf['db']['test2'][0]['database']              = 'test2'; //数据库
 $InitPHP_conf['db']['test2'][0]['charset']               = 'utf8'; //数据库编码   
 $InitPHP_conf['db']['test2'][0]['pconnect']              = 0; //是否持久链接 
 /**

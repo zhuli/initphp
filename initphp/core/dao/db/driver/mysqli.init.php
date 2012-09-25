@@ -24,7 +24,7 @@ class mysqliInit extends dbbaseInit{
 	 * @return obj
 	 */
 	public function connect($host, $user, $password, $database, $charset = 'utf8', $pconnect = 0) {
-		$link_id = ($pconnect == 0) ? mysqli_connect($host, $user, $password) : mysqli_pconnect($host, $user, $password);
+		$link_id = mysqli_connect($host, $user, $password);
 		if (!$link_id) InitPHP::initError('mysql connect error!');
 		mysqli_query($link_id, 'SET NAMES ' . $charset);
 		if (!mysqli_select_db($link_id, $database)) InitPHP::initError('database is not exist!');

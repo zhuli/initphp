@@ -147,8 +147,8 @@ class InitPHP extends coreInit {
 	 * @return string
 	 */
 	public static function output($string, $type = 'encode') {
-		$html = array("&", '"', "'", "<", ">");
-		$html_code = array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;");
+		$html = array("&", '"', "'", "<", ">", "%3C", "%3E");
+		$html_code = array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;", "&lt;", "&gt;");
 		if ($type == 'encode') {
 			if (function_exists('htmlspecialchars')) return htmlspecialchars($string);
 			return str_replace($html, $html_code, $string);

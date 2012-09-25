@@ -207,8 +207,8 @@ class filterInit extends validateInit {
 	 * @return string
 	 */
 	public function str_out($value) {
-		$badstr = array("<", ">", "%3C", "%3E");
-		$newstr = array("&lt;", "&gt;", "&lt;", "&gt;");
+		$badstr = array("<", ">", "%3C", "%3E", "'", '"');
+		$newstr = array("&lt;", "&gt;", "&lt;", "&gt;", "&quot;", "&#39;");
 		$value  = str_replace($newstr, $badstr, $value);
 		return stripslashes($value); //下划线
 	}
