@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Cookie</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.6.1 Cookie</div>
+    <div class="header_right"><a href="6_5_4.htm">上一页</a> <a href="6_6_2.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>工具描述：</h3>
+</div>
+<p>主要用来设置cookie、获取cookie和清除cookie。可以设置cookie的失效时间、作用域等。属于InitPHP框架工具类，需要通过$this->getUtil()方法获取。</p>
+
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$cookie = $this->getUtil('cookie'); 
+</pre>
+<div class="nav"></div>
+<div class="title">接口描述：
+</div>
+<p>
+接口：$cookie->set($name, $val, $expire = '', $path = '', $domain = '') 设置cookie值
+</p>
+<table>
+    <tr>
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>设置的Cookie名称</td>
+    </tr>
+    <tr>
+      <td>$val</td>
+      <td>String </td>
+      <td>是</td>
+      <td>Cookie值</td>
+    </tr>
+    <tr>
+      <td>$expire</td>
+      <td>Int</td>
+      <td>否</td>
+      <td>失效时间</td>
+    </tr>
+    <tr>
+      <td>$path</td>
+      <td>String</td>
+      <td>否</td>
+      <td>cookie路径</td>
+    </tr>
+    <tr>
+      <td>$domain</td>
+      <td>String</td>
+      <td>否</td>
+      <td>cookie作用的主机</td>
+    </tr>
+</table>
+
+<p>
+接口：$cookie->get($name) 获取cookie
+</p>
+<table>
+
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>Cookie名称</td>
+    </tr>
+</table>
+<p>
+接口：$cookie->del($name) 删除cook
+</p>
+<table>
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>Cookie名称</td>
+    </tr>
+</table>
+
+<p>
+接口：$cookie->is_set($name) 是否存在cookie 
+</p>
+<table>
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>Cookie名称</td>
+    </tr>
+</table>
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$cookie = $this->getUtil('cookie');
+		$cookie->set('test', 'testVal');
+		$test = $cookie->get('test');
+		$this->getTestService()->test();
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'Hello World';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}</pre>
+
+<div class="nav"></div>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

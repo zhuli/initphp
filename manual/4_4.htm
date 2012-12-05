@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Controller控制器层使用</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第4章 4.4 Controller控制器层使用</div>
+    <div class="header_right"><a href="4_3.htm">上一页</a> <a href="4_5.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>Controller应用说明：</h3>
+</div>
+<ul>
+  <li>结合之前的Hello World继续Controller应用</li>
+  <li>Controller层是业务逻辑层和模板显示层的中间层，主要职责是获取数据和输出数据</li>
+  <li>Controller层的接口函数可以使用：$this->controller和$this->view，具体可以查看相关的API文档详细信息。</li>
+  <li>所有的Controller需要继承InitPHP框架提供的框架基类Controller</li>
+  <li><span style="color:#FF0000">建议使用Zend Studio工具开发，有代码提示功能，能将所有的API提示显示，方便您的开发速度</span></li>
+</ul>
+<div class="title">
+  <h3>API使用：</h3>
+</div>
+<ul>
+  <li>具体的API可以参考Controller中的API文档</li>
+  <li>Controller API：$this->controller-></li>
+  <li>View API：$this->view-></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$username = $this->controller->get_gp('username'); //【$this->controller 使用】获取GET或者POST的username值
+		$this->view->display(); //【$this->view 使用】模板显示
+	}
+	
+	public function test() {
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}
+</pre>
+<div class="title">
+  <h3>配置参考：</h3>
+</div>
+<ul>
+  <li>自定义Controller，则需要修改initphp框架中的initphp.conf.php配置文件</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * Controller控制器配置参数
+ * 1. 你可以配置控制器默认的文件夹，默认的后缀，Action默认后缀，默认执行的Action和Controller
+ * 2. 一般情况下，你可以不需要修改该配置参数
+ * 3. $InitPHP_conf['ismodule']参数，当你的项目比较大的时候，可以选用module方式，
+ * 开启module后，你的URL种需要带m的参数，原始：index.php?c=index&a=run, 加module：
+ * index.php?m=user&c=index&a=run , module就是$InitPHP_conf['controller']['path']目录下的
+ * 一个文件夹名称，请用小写文件夹名称
+ */
+$InitPHP_conf['ismodule'] = false; //开启module方式
+$InitPHP_conf['controller']['path']                  = 'web/controller/'; 
+$InitPHP_conf['controller']['controller_postfix']    = 'Controller'; //控制器文件后缀名
+$InitPHP_conf['controller']['action_postfix']        = ''; //Action函数名称后缀
+$InitPHP_conf['controller']['default_controller']    = 'index'; //默认执行的控制器名称
+$InitPHP_conf['controller']['default_action']        = 'run'; //默认执行的Action函数
+$InitPHP_conf['controller']['module_list']           = array('test', 'index'); //module白名单
+$InitPHP_conf['controller']['default_module']        = 'index'; //默认执行module
+$InitPHP_conf['controller']['default_before_action'] = 'before'; //默认前置的ACTION名称
+$InitPHP_conf['controller']['default_after_action']  = 'after'; //默认后置ACTION名称
+</pre>
+<div class="title">
+  <h3>Action实例：</h3>
+</div>
+<ul>
+  <li>默认的缺省Controller为indexController，默认缺省Action为run()</li>
+  <li>$initphp_list是Action的白名单，只有在白名单中才可以被URL访问</li>
+  <li>before()是前置的Action，会在正常Action运行之前提前运行</li>
+  <li>after()是后置的Action，会在正常Action运行之后运行</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$username = $this->controller->get_gp('username'); //获取GET或者POST的username值
+		echo '默认执行';
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'index.php?c=index&a=test 才会执行';
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	public function before() {
+		echo '前置执行Action';
+	}
+	
+	public function after() {
+		echo '后置执行Action';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}
+ </pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

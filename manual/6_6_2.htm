@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Debug</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.6.2 Debug</div>
+    <div class="header_right"><a href="6_6_1.htm">上一页</a> <a href="6_6_3.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">
+  <h3>工具描述：</h3>
+</div>
+<p>可以直接打印出调试的代码。可以监控程序运行的时间和消耗的内存。属于InitPHP框架工具类，需要通过$this->getUtil()方法获取</p>
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$debug = $this->getUtil('debug'); 
+</pre>
+<div class="nav"></div>
+<div class="title">接口描述：
+</div>
+<p>
+接口：$debug->dump($data, $isexit = 0) BUG调试工具-打印出信息
+</p>
+<table >
+
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$data</td>
+      <td>String|Array </td>
+      <td>是</td>
+      <td>调试的数据</td>
+    </tr>
+    <tr>
+      <td>$isexit</td>
+      <td>Int </td>
+      <td>否</td>
+      <td>是否跳出 exit</td>
+    </tr>
+
+</table>
+
+<p>
+接口：$debug->mark($name)  BUG调试工具-程序标记
+</p>
+<table>
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>名称</td>
+    </tr>
+</table>
+
+<p>
+接口：$debug->use_time($name, $decimal = 6) BUG调试工具-计算程序段使用的时间
+</p>
+<table>
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>开始和结束时间的标记名称</td>
+    </tr>
+	    <tr>
+      <td>$name</td>
+      <td>Int </td>
+      <td>否</td>
+      <td>小数位数</td>
+    </tr>
+</table>
+
+<p>
+接口：$debug->use_memory($name) BUG调试工具-计算程序段计算内存使用峰值
+</p>
+<table >
+    <tr>
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>开始和结束时间的标记名称</td>
+    </tr>
+</table>
+<div class="nav"></div>
+
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$debug = $this->getUtil('debug'); 
+		$debug->dump(array('test'));
+		$debug->mark('test');
+		for ($i=0;$i<10000000;$i++);
+		$debug->mark('test');
+		echo $debug->use_time('test', $decimal = 6);
+		$this->getTestService()->test();
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'Hello World';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}</pre>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

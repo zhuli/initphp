@@ -1,0 +1,627 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - 常用DB操作 API</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.5.4 常用DB操作 API</div>
+    <div class="header_right"><a href="6_5_3.htm">上一页</a> <a href="6_6_1.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">目录</div>
+<ul style="list-style:none;">
+  <li><a href="#$this->dao->db->delete">$this->dao->db->delete</a></li>
+  <li><a href="#$this->dao->db->delete_by_field">$this->dao->db->delete_by_field</a></li>
+  <li><a href="#$this->dao->db->get_all">$this->dao->db->get_all</a></li>
+  <li><a href="#$this->dao->db->get_all_sql">$this->dao->db->get_all_sql</a></li>
+  <li><a href="#$this->dao->db->get_count">$this->dao->db->get_count</a></li>
+  <li><a href="#$this->dao->db->get_one">$this->dao->db->get_one</a></li>
+  <li><a href="#$this->dao->db->get_one_by_field">$this->dao->db->get_one_by_field</a></li>
+  <li><a href="#$this->dao->db->insert">$this->dao->db->insert</a></li>
+  <li><a href="#$this->dao->db->get_one_sql">$this->dao->db->get_one_sql</a></li>
+  <li><a href="#$this->dao->db->insert_more">$this->dao->db->insert_more</a></li>
+  <li><a href="#$this->dao->db->update">$this->dao->db->update</a></li>
+  <li><a href="#$this->dao->db->update_by_field">$this->dao->db->update_by_field</a></li>
+</ul>
+<div class="nav"></div>
+
+<div class="title">1. $this->dao->db->delete($ids, $table_name, $id_key = 'id') SQL操作-删除数据<a name="$this->dao->db->delete"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>  根据ID值删除表数据。可以删除单个或者多个数据，$ids可以是单个数字或者数组。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$ids</td>
+      <td>String|Array </td>
+      <td>是</td>
+      <td>单个id或者多个id</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+		    <tr>
+      <td>$id_key</td>
+      <td>String </td>
+      <td>否</td>
+      <td>主键名称，默认 id</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->delete(array(1,2,3), 'test', 'id');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">2. $this->dao->db->delete_by_field($field, $table_name) SQL操作-通过条件语句删除数据<a name="$this->dao->db->delete_by_field"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据条件语句删除表数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$field</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>数组条件 array('id'=>1)</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->delete_by_field(array('id'=>1), 'test');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">3. $this->dao->db->get_all($table_name, $num = 20, $offest = 0, $field = array(), $id_key = 'id', $sort = 'DESC') SQL操作-获取全部数据<a name="$this->dao->db->get_all"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据条件语句删除表数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+    <tr>
+      <td>$num</td>
+      <td>Int </td>
+      <td>否</td>
+      <td>分页参数</td>
+    </tr>
+    <tr>
+      <td>$offest</td>
+      <td>Int </td>
+      <td>否</td>
+      <td>分页参数</td>
+    </tr>
+    <tr>
+      <td>$field</td>
+      <td>Array</td>
+      <td>否</td>
+      <td>条件语句</td>
+    </tr>
+    <tr>
+      <td>$key_id</td>
+      <td>String</td>
+      <td>否</td>
+      <td>排序字段</td>
+    </tr>
+    <tr>
+      <td>$sort</td>
+      <td>String</td>
+      <td>否</td>
+      <td>排序</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_all('test');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">4. $this->dao->db->get_all_sql($sql) SQL操作-获取所有数据<a name="$this->dao->db->get_all_sql"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据SQL语句获取全部数据信息。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$sql</td>
+      <td>String</td>
+      <td>是</td>
+      <td>数据库语句</td>
+    </tr>
+
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_all_sql("SELECT * FROM test");
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">5. $this->dao->db->get_count($table_name, $field = array()) SQL操作-获取数据总数<a name="$this->dao->db->get_count"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>根据SQL语句获取全部数据信息。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+    <tr>
+      <td>$field</td>
+      <td>Array</td>
+      <td>否</td>
+      <td>条件语句</td>
+    </tr>
+
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_count("test");
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">6. $this->dao->db->get_one($id, $table_name, $id_key = 'id') SQL操作-获取单条信息<a name="$this->dao->db->get_one"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据ID值获取单条数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$ids</td>
+      <td>String|Array </td>
+      <td>是</td>
+      <td>单个id或者多个id</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+		    <tr>
+      <td>$id_key</td>
+      <td>String </td>
+      <td>否</td>
+      <td>主键名称，默认 id</td>
+    </tr>
+
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_one(1, 'test', 'id');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">6. $this->dao->db->get_one($id, $table_name, $id_key = 'id') SQL操作-获取单条信息<a name="$this->dao->db->get_one"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据ID值获取单条数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$ids</td>
+      <td>String|Array </td>
+      <td>是</td>
+      <td>单个id或者多个id</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+		    <tr>
+      <td>$id_key</td>
+      <td>String </td>
+      <td>否</td>
+      <td>主键名称，默认 id</td>
+    </tr>
+
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_one(1, 'test', 'id');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">7. $this->dao->db->get_one_by_field($field, $table_name) SQL操作-通过条件语句获取一条信息<a name="$this->dao->db->get_one_by_field"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>根据条件获取语句。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$field</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>数组条件 array('id'=>1)</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_one_by_field(array('uid' => 100), 'test');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">8. $this->dao->db->get_one_sql($sql) SQL操作-获取单条信息-sql语句方式<a name="$this->dao->db->get_one_sql"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据SQL语句获取单条数据信息。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$sql</td>
+      <td>String</td>
+      <td>是</td>
+      <td>数据库语句</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_one_sql("SELECT * FROM test WHERE id = 1");
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">9. $this->dao->db->insert($data, $table_name) SQL操作-插入一条数据<a name="$this->dao->db->insert"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> 根据SQL语句获取单条数据信息。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$sql</td>
+      <td>String</td>
+      <td>是</td>
+      <td>数据库语句</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->get_one_sql("SELECT * FROM test WHERE id = 1");
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">10. $this->dao->db->insert_more($field, $data, $table_name) SQL操作-插入多条数据<a name="$this->dao->db->insert_more"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>  SQL操作-插入多条数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$field</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>字段名称数组</td>
+    </tr>
+			    <tr>
+      <td>$data</td>
+      <td>Array</td>
+      <td>是</td>
+      <td>值数组</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->insert_more(array('username'), array(array('init'),array('woshishen')), 'test');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">11. $this->dao->db->update($id, $data, $table_name, $id_key = 'id') SQL操作-根据主键id更新数据<a name="$this->dao->db->update"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>  SQL操作-根据主键id更新数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$id</td>
+      <td>Int </td>
+      <td>是</td>
+      <td>主键ID</td>
+    </tr>
+	    <tr>
+      <td>$data</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>参数 array('key'=>'value')</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+			    <tr>
+      <td>$id_key</td>
+      <td>String </td>
+      <td>否</td>
+      <td>主键名称，默认 id</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->update(1, array('username' => 'test'), 'test');
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">12. $this->dao->db->update_by_field($data, $field, $table_name) SQL操作-根据字段更新数据<a name="$this->dao->db->update_by_field"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>   SQL操作-根据字段更新数据。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+	    <tr>
+      <td>$data</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>参数 array('key'=>'value')</td>
+    </tr>
+	    <tr>
+      <td>$field</td>
+      <td>Array </td>
+      <td>是</td>
+      <td>数组条件 array('id'=>1)</td>
+    </tr>
+	    <tr>
+      <td>$table_name</td>
+      <td>String </td>
+      <td>是</td>
+      <td>数据表名称</td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+
+	public function test() {
+		$this->dao->db->update_by_field(array('username'=>'test'), array('uid' => 100), 'test'); //根据条件更新数据
+	}
+}
+</pre>
+<div class="nav"></div>
+
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

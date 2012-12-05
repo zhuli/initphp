@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  View-view 模板核心文件类
+ * InitPHP 3.2.2 国产PHP开发框架  View-view 模板核心文件类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *------------------------------------------------------------------------------- 
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-11-27 
 ***********************************************************************************/
 class templateInit {
 
@@ -264,7 +264,10 @@ class viewInit extends templateInit {
 	 * Controller中使用方法：$this->view->display();
 	 * @return array
 	 */
-	public function display() {
+	public function display($template = '') {
+		if ($template != '') {
+			$this->set_tpl($template);
+		}
 		$InitPHP_conf = InitPHP::getConfig();
 		if (is_array($this->view)) {
 			if ($InitPHP_conf['isviewfilter']) $this->out_put($this->view);
@@ -314,7 +317,7 @@ class viewInit extends templateInit {
 				if (function_exists('htmlspecialchars')) {
 					$value[$key] =  htmlspecialchars($val);
 				} else {
-					$value[$key] =  str_replace(array("&", '"', "'", "<", ">"), array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;"), $val);
+					$value[$key] =  str_replace(array("&", '"', "'", "<", ">", "%3C", "%3E"), array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;", "&lt;", "&gt;"), $val);
 				}
 			}
 		}

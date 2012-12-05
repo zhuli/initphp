@@ -1,0 +1,7 @@
+1. 新增InitPHP::cli_init 命令行运行模式
+2. 验证码支持多个地方使用，只要传递key值
+3. 修改分页可以支持自定义样式
+4. 修改URL组装方式
+5. 模板$this->view->display("index/run")
+6. get_gp 默认关闭参数过滤，这样的话就需要默认开始输出过滤
+7. 新增$this->dao->db->build_key($data, $fields)

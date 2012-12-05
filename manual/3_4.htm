@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - 安全</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第3章 3.4 安全</div>
+    <div class="header_right"><a href="3_3.htm">上一页</a> <a href="4_1.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">关于安全：</div>
+<ul>
+  <li>WEB安全在现在的WEB应用中越来越体现他自身的重要性。</li>
+  <li>InitPHP框架提供了一套WEB安全基础的实现方式。</li>
+</ul>
+<div class="title">全局Filter机制：</div>
+<ul>
+  <li>InitPHP框架内置了fliter()函数对$_GET、$_PSOT、$_COOKIE、$_SERVICE等容易被攻击的全局变量进行了过滤</li>
+  <li>fliter()函数在框架运行的时候会自动加载执行</li>
+  <li>Filter安全类：<img src="static/page.gif" />&nbsp;core/controller/filter.init.php</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * 安全过滤类-全局变量过滤
+ * 在Controller初始化的时候已经运行过该变量，对全局变量进行处理
+ *  Controller中使用方法：$this->controller->fliter()
+ * @return
+ */
+public function fliter() {
+	if (is_array($_SERVER)) {
+		foreach ($_SERVER as $k => $v) {
+			if (isset($_SERVER[$k])) {
+				$_SERVER[$k] = str_replace(array('<','>','"',"'",'%3C','%3E','%22','%27','%3c','%3e'), '', $v);
+			}
+		}
+	}
+	unset($_ENV, $HTTP_GET_VARS, $HTTP_POST_VARS, $HTTP_COOKIE_VARS, $HTTP_SERVER_VARS, $HTTP_ENV_VARS);
+	self::fliter_slashes($_GET);
+	self::fliter_slashes($_POST);
+	self::fliter_slashes($_COOKIE);
+	self::fliter_slashes($_FILES);
+	self::fliter_slashes($_REQUEST);
+}
+
+/* 运行的时候执行 */
+/**
+ * 初始化控制器，
+ */
+public function __construct() {
+	$this->fliter();
+	$this->set_token(); //生成全局TOKEN值，防止CRsf攻击
+}
+</pre>
+
+<div class="title">丰富的过滤函数：
+</div>
+<ul>
+  <li>InitPHP框架提供了丰富的数据过滤函数</li>
+  <li>过滤类：<img src="static/page.gif" />&nbsp;core/controller/filter.init.php</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/* 一部分类 */
+/**
+ * 安全过滤类-加反斜杠，放置SQL注入
+ *  Controller中使用方法：$this->controller->fliter_slashes(&$value)
+ * @param  string $value 需要过滤的值
+ * @return string
+ */
+public static function fliter_slashes(&$value) {
+	if (get_magic_quotes_gpc()) return false; //开启魔术变量
+	$value = (array) $value;
+	foreach ($value as $key => $val) {
+		if (is_array($val)) {
+			self::fliter_slashes($value[$key]);
+		} else {
+			$value[$key] = addslashes($val);
+		}
+	}
+}
+
+/**
+ * 安全过滤类-过滤javascript,css,iframes,object等不安全参数 过滤级别高
+ *  Controller中使用方法：$this->controller->fliter_script($value)
+ * @param  string $value 需要过滤的值
+ * @return string
+ */
+public function fliter_script($value) {
+	$value = preg_replace("/(javascript:)?on(click|load|key|mouse|error|abort|move|unload|change|dblclick|move|reset|resize|submit)/i","&111n\\2",$value);
+	$value = preg_replace("/<script(.*?)>(.*?)<\/script>/si","",$value);
+	$value = preg_replace("/<iframe(.*?)>(.*?)<\/iframe>/si","",$value);
+	$value = preg_replace ("/<object.+<\/object>/iesU", '', $value);
+	return $value;
+}
+</pre>
+
+<div class="title">
+统一的get_gp函数，获取GET或者POST数据：
+</div>
+<ul>
+  <li>不建议用户使用$_GET和$_POST的方法获取GET或者POST数据</li>
+  <li>get_gp函数默认会过滤数据</li>
+  <li>该函数还提供数组获取方法，可以获取多个数据</li>
+  <li><span style="color:#FF0000">如果你使用InitPHP框架，请强制使用该函数</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * 安全过滤类-获取GET或者POST的参数值，经过过滤
+ * 如果不指定$type类型，则获取同名的，POST优先
+ * $isfliter 默认开启，强制转换请求的数据
+ * 该方法在Controller层中，获取所有GET或者POST数据，都需要走这个接口
+ *  Controller中使用方法：$this->controller->get_gp($value, $type = null,  $isfliter = true)
+ * @param  string|array $value 参数
+ * @param  string|array $type 获取GET或者POST参数，P - POST ， G - GET
+ * @param  bool         $isfliter 变量是否过滤
+ * @return string|array
+ */
+public function get_gp($value, $type = null,  $isfliter = true) {
+	if (!is_array($value)) {
+		if ($type === null) {
+			if (isset($_GET[$value])) $temp = $_GET[$value];
+			if (isset($_POST[$value])) $temp = $_POST[$value];
+		} else {
+			$temp = (strtoupper($type) == 'G') ? $_GET[$value] : $_POST[$value];
+		}
+		$temp = ($isfliter === true) ? $this->fliter_escape($temp) : $temp;
+		return $temp;
+	} else {
+		$temp = array();
+		foreach ($value as $val) {
+			if ($type === null) {
+				if (isset($_GET[$val])) $temp[$val] = $_GET[$val];
+				if (isset($_POST[$val])) $temp[$val] = $_POST[$val];
+			} else {
+				$temp[$val] = (strtoupper($type) == 'G') ? $_GET[$val] : $_POST[$val];
+			}
+			$temp[$val] = ($isfliter === true) ? $this->fliter_escape($temp[$val]) : $temp[$val];
+		}
+		return $temp;
+	}
+}
+</pre>
+
+<div class="title">CSRF风险控制：
+</div>
+<ul>
+  <li>CSRF（跨站请求伪造）是很多开发者容易遗漏的一个安全问题。</li>
+  <li>InitPHP框架内置了公用的TOKEN机制，在框架运行的时候就能生成用户的唯一TOKEN，用户每次打开浏览器访问网站的TOKEN都是不同的</li>
+  <li><span style="color:#FF0000">你需要做的是：在你的POST和GET请求的地方，添加上TOKEN，然后在你的Action中验证TOKEN是否正确</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/* TOKEN实现 */
+/**
+ *	类加载-获取全局TOKEN，防止CSRF攻击
+ *  Controller中使用方法：$this->controller->get_token()
+ *  @return 
+ */
+public function get_token() {
+	return $_COOKIE['init_token'];
+}
+
+/**
+ *	类加载-检测token值
+ *  Controller中使用方法：$this->controller->check_token($ispost = true)
+ *  @return 
+ */
+public function check_token($ispost = true) {
+	if ($ispost && !$this->is_post()) return false;
+	if ($this->get_gp('init_token') !== $this->get_token()) return false;
+	return true;
+}
+
+/**
+ *	类加载-设置全局TOKEN，防止CSRF攻击
+ *  Controller中使用方法：$this->controller->set_token()
+ *  @return 
+ */
+private function set_token() {
+	if (!$_COOKIE['init_token']) {
+		$str = substr(md5(time(). $this->get_useragent()), 5, 8);
+		setcookie("init_token", $str);
+		$_COOKIE['init_token'] = $str;	
+	}
+}
+
+/* 框架运行的时候生成TOKEN 和 模板赋值TOKEN */
+/**
+ * 初始化控制器，
+ */
+public function __construct() {
+	$this->fliter();
+	$this->set_token(); //生成全局TOKEN值，防止CRsf攻击
+}
+/**
+ * 初始化
+ */
+public function __construct() {
+	global $InitPHP_conf;
+	$this->controller = $this->load('controller', 'c'); //导入Controller
+	$this->view       = $this->load('view', 'v'); //导入View	
+	$this->view->set_template_config($InitPHP_conf['template']); //设置模板
+	$this->view->assign('init_token', $this->controller->get_token()); //全局输出init_token标记
+}
+
+/* 如何使用：*/
+GET方式提交-在URL或者GET提交上面，添加init_token=<!--{echo $init_token;}-->
+http://127.0.0.1/?init_token=<!--{echo $init_token;}-->
+POST的方法，用一个隐藏表单 表单名称init_token 值：<!--{echo $init_token;}-->
+然后在Action中
+$this->controller->check_token(); 
+来验证token是否一致
+</pre>
+
+<div class="title">XSS风险控制：
+</div>
+<ul>
+  <li>XSS的问题是一个头大的问题，很多大型网站也经常会爆出这样的漏洞。</li>
+  <li>XSS防范主要是输出过滤。将输出到模板上的PHP变量都进行HTML过滤</li>
+  <li>InitPHP开发框架提供两种方式：模板输出的时候对全局进行过滤；提供InitPHP::output()输出过滤函数</li>
+  <li>采用全局变量输出过滤的方式，需要开启配置：$InitPHP_conf['isviewfilter']</li>
+  <li>InitPHP::output()函数也可以还原已经被HTML过滤过的变量</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/* 全局输出过滤 */
+/**
+ * 模板-显示视图
+ * 1. 在Controller中需要显示模板，就必须调用该函数
+ * 2. 模板解析可以设置 $InitPHP_conf['isviewfilter'] 值,对变量进行过滤
+ * Controller中使用方法：$this->view->display();
+ * @return array
+ */
+public function display() {
+	global $InitPHP_conf;
+	if (is_array($this->view)) {
+		if ($InitPHP_conf['isviewfilter']) $this->out_put($this->view); //输出过滤
+		foreach ($this->view as $key => $val) {
+			$$key = $val;
+		}
+	}
+	$this->template_arr = $this->parse_template_arr($this->template_arr); //模板设置
+	foreach ($this->template_arr as $file_name) {
+		if (in_array($file_name, $this->remove_tpl_arr)) continue;
+		$complie_file_name = $this->template_run($file_name); //模板编译
+		if (!file_exists($complie_file_name)) InitPHP::initError($complie_file_name. ' is not exist!');
+		include_once($complie_file_name);
+	}
+}
+
+/* 手工输出InitPHP::output函数 */
+/**
+ * 【静态】XSS过滤，输出内容过滤
+ * 1. 框架支持全局XSS过滤机制-全局开启将消耗PHP运行
+ * 2. 手动添加XSS过滤函数，在模板页面中直接调用
+ * 全局使用方法：InitPHP::output($string, $type = 'encode');
+ * @param string $string  需要过滤的字符串
+ * @param string $type    encode HTML处理 | decode 反处理
+ * @return string
+ */
+public static function output($string, $type = 'encode') {
+	$html = array("&", '"', "'", "<", ">");
+	$html_code = array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;");
+	if ($type == 'encode') {
+		if (function_exists('htmlspecialchars')) return htmlspecialchars($string);
+		return str_replace($html, $html_code, $string);
+	} else {
+		if (function_exists('htmlspecialchars_decode')) return htmlspecialchars_decode($string);
+		return str_replace($html_code, $html, $string);
+	}
+}
+</pre>
+
+<div class="title">SQL安全：
+</div>
+<ul>
+  <li>SQL的安全是非常重要的一个环节，如果你的SQL语句出现了问题，那么黑客很容易攻破你的网站</li>
+  <li>InitPHP框架提供了一整套SQL安全机制：sql_build和常用DB操作函数</li>
+  <li>一般情况下你的DB操作我们提供的DB操作函数能满足你的需求了</li>
+  <li><span style="color:#FF0000">如果你自己写SQL语句，并且SQL语句中包含变量，请用sql_build提供的相关函数组装SQL语句</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+public function get_one($id, $table_name, $id_key = 'id') {
+	$id = (int) $id;
+	if ($id < 1) return array(); 
+	$where = $this->build_where(array($id_key=>$id)); //组装函数
+	$sql = sprintf("SELECT * FROM %s %s LIMIT 1", $table_name, $where);
+	$result = $this->query($sql, false);
+	if (!$result) return false;
+	$r = $this->fetch_assoc($result);
+	$this->set_default_link_id(); //设置默认的link_id
+	return $r;
+}
+</pre>
+
+<div class="title">其他安全问题：
+</div>
+<ul>
+  <li>项目安全还包括业务逻辑是否正确，是否会被用户专空子</li>
+  <li>类型的转换，INT类型的一定要强制转换</li>
+</ul>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

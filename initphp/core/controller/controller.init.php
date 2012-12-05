@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  Controller-controller 控制器基类
+ * InitPHP 3.2.2 国产PHP开发框架  Controller-controller 控制器基类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-10-09 
 ***********************************************************************************/
 require_once("request.init.php");
 require_once("validate.init.php");
@@ -20,7 +20,7 @@ class controllerInit extends filterInit{
 	 * 初始化控制器，
 	 */
 	public function __construct() {
-		$this->filter();
+		$this->filter(); //全局过滤函数，对GET POST数据自动过，InitPHP采取非常严格的数据过滤机制
 		$this->set_token(); //生成全局TOKEN值，防止CRsf攻击
 	}
 	

@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  Dao-sqlbuild 数据字段安全封装类
+ * InitPHP 3.2.2 国产PHP开发框架  Dao-sqlbuild 数据字段安全封装类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-11-27 
 ***********************************************************************************/
 require_once("dbhandler.init.php");
 class sqlbuildInit extends dbhandlerInit {
@@ -152,7 +152,25 @@ class sqlbuildInit extends dbhandlerInit {
 	}
 	
 	/**
+	 * SQL组装-检查DAO中进来的数组参数是否key键存在
+	 * DAO中使用方法：$this->dao->db->build_key($data, $fields)
+	 * @param array $data  例如：array("username" => 'asdasd')
+	 * @param string $fields  例如："username,password"
+	 */
+	public function build_key($data, $fields) {
+		$fields = explode(',', $fields);
+		$temp = array();
+		foreach ($data as $key => $value) {
+			if (in_array($key, $fields)) {
+				$temp[$key] = $value;
+			}
+		}
+		return $temp;
+	}
+	
+	/**
 	 * SQL组装-私有SQL过滤
+	 * 
 	 * @param  string $val 过滤的值
 	 * @param  int    $iskey 0-过滤value值，1-过滤字段
 	 * @return string

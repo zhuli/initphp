@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');   
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  扩展类库-分页类
+ * InitPHP 3.2.2 国产PHP开发框架  扩展类库-分页类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-11-27 
 ***********************************************************************************/ 
 class pagerInit { 
 
@@ -37,14 +37,14 @@ class pagerInit {
 	 * 	@param int  $url     URL 
 	 *  @return string
 	 */
-	public function pager($count, $prepage, $url) {
+	public function pager($count, $prepage, $url, $default_style = false) {
 		$count    = (int) $count;
 		$prepage  = (int) $prepage; 
 		$page_num = ceil($count / $prepage); //总共多少页
 		$page     = (int) $_GET['page'];
 		$page     = ($page > $page_num) ? $page_num : ($page = ($page < 1) ? 1 : $page);
 		$url      = (strpos($url, '?') === false) ? $url . '?' : $url;
-		return $this->pager_html($page_num, $url, $page);
+		return $this->pager_html($page_num, $url, $page, $default_style);
 	}
 	
 	/**
@@ -54,11 +54,15 @@ class pagerInit {
 	 * 	@param int    $page     当前页
 	 *  @return string
 	 */
-	private function pager_html($page_num, $url, $page) {
+	private function pager_html($page_num, $url, $page, $default_style) {
 		list($start, $end) = $this->get_satrt_and_end($page, $page_num);
 		list($back, $next) = $this->get_pager_next_back_html($url, $page, $page_num);
 		list($first, $last) = $this->get_first_last_html($page_num, $url);
-		$html = $this->style_config . "<div class='InitPHP_pages'>";
+		if ($default_style == true) {
+			$html = $this->style_config . "<div class='InitPHP_pages'>";
+		} else {
+			$html = "<div class='InitPHP_pages'>";
+		}
 		$html .= $back;
 		$html .= $first;
 		$html .= $this->get_pager_num_html($start, $end, $url, $page);

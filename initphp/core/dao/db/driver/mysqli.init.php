@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  Dao-mysqli 基类
+ * InitPHP 3.2.2 国产PHP开发框架  Dao-mysqli 基类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-11-27 
 ***********************************************************************************/
 class mysqliInit extends dbbaseInit{
 	
@@ -24,7 +24,7 @@ class mysqliInit extends dbbaseInit{
 	 * @return obj
 	 */
 	public function connect($host, $user, $password, $database, $charset = 'utf8', $pconnect = 0) {
-		$link_id = mysqli_connect($host, $user, $password);
+		$link_id = ($pconnect == 0) ? mysqli_connect($host, $user, $password) : mysqli_pconnect($host, $user, $password);
 		if (!$link_id) InitPHP::initError('mysql connect error!');
 		mysqli_query($link_id, 'SET NAMES ' . $charset);
 		if (!mysqli_select_db($link_id, $database)) InitPHP::initError('database is not exist!');

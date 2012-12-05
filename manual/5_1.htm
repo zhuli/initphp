@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Helper类使用</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第5章 5.1 Helper类使用</div>
+    <div class="header_right"><a href="4_7.htm">上一页</a> <a href="5_2.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>Helper类使用说明：</h3>
+</div>
+<ul>
+  <li>如果你开发的项目中，设计的类和业务有关系不能放进框架的Library下面，而且具备一定的通用性不能放进Service中，则可以放置在<img src="static/folderopen.gif" />&nbsp;&nbsp;&nbsp;&nbsp;library/helper/目录下面</li>
+  <li>Helper类：项目中公用的类，但是不适合放入InitPHP的Library扩展类库中，也不适合用Service</li>
+</ul>
+
+ <div class="title">
+  <h3>如何使用Helper类：</h3>
+</div> 
+    <ul>
+	  <li>InitPHP框架提供了InitPHP::import()和InitPHP::loadclass()两个函数，来导入类文件和实例化类</li>
+    </ul>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	InitPHP::import('library/helper/test.php');
+	$a = InitPHP::loadclass('test');
+	$a->test();
+	$this->view->set_tpl('test'); //设置一个test.htm的模板页面
+	$this->view->display(); //模板显示
+}
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

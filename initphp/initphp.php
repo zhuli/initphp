@@ -1,12 +1,12 @@
 <?php
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  框架入口文件 核心框架文件
+ * InitPHP 3.2.2 国产PHP开发框架  框架入口文件 核心框架文件
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09
+ * $Dtime:2012-11-27
 ***********************************************************************************/
 require_once('initphp.conf.php'); //导入框架配置类
 require_once('init/core.init.php'); //导入核心类文件
@@ -30,6 +30,25 @@ class InitPHP extends coreInit {
 			$dispacher->dispatcher();
 			$run = InitPHP::loadclass('runInit');
 			$run->run();
+		} catch (exceptionInit $e) {
+			$e->errorMessage();
+		}
+	}
+	
+	/**
+	 * 【静态】命令行模式运行php
+	 * 1. 例如：/usr/lib/php /usr/local/web/www/index.php index test sql
+	 * 2. index 控制器名称 test Action名称 sql controller/文件夹下的文件名称
+	 * 3. 全局使用方法：InitPHP::cli_init(); 
+	 * @return object
+	 */
+	public static function cli_init($argv) {
+		try {
+			$InitPHP_conf = InitPHP::getConfig();
+			$argv[1] = ($argv[1] == '') ? '' : trim($argv[1]) . $InitPHP_conf['controller']['controller_postfix'];
+			$argv[2] = ($argv[2] == '') ? '' : trim($argv[2]) . $InitPHP_conf['controller']['action_postfix'];
+			$argv[3] = ($argv[3] == '') ? '' : trim($argv[3]);
+			InitPHP::getController($argv[1], $argv[2], $params = array(), $argv[3]);
 		} catch (exceptionInit $e) {
 			$e->errorMessage();
 		}
@@ -151,11 +170,12 @@ class InitPHP extends coreInit {
 		$html_code = array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;", "&lt;", "&gt;");
 		if ($type == 'encode') {
 			if (function_exists('htmlspecialchars')) return htmlspecialchars($string);
-			return str_replace($html, $html_code, $string);
+			$str = str_replace($html, $html_code, $string);
 		} else {
 			if (function_exists('htmlspecialchars_decode')) return htmlspecialchars_decode($string);
-			return str_replace($html_code, $html, $string);
+			$str = str_replace($html_code, $html, $string);
 		}
+		return $str;
 	}
 
 	/**
@@ -199,80 +219,70 @@ class InitPHP extends coreInit {
 
 	/**
 	 * 【静态】组装URL
-	 * 1. url index.php?m=user&c=index&a=run
-	 * 2. 如果开启路由转化，url解析后 /user/index/run/?id=1
-	 * 全局使用方法：InitPHP::url($url, $baseUrl = '')
-	 * @param string $url     index.php?m=user&c=index&a=run
-	 * @param string $baseUrl 如果不填写，则自动组装网站url
-	 * @return
+	 * default：index.php?m=user&c=index&a=run
+ 	 * rewrite：/user/index/run/?id=100
+ 	 * path: /user/index/run/id/100
+	 * html: user-index-run.htm?uid=100
+ 	 * 全局使用方法：InitPHP::url('user|delete', array('id' => 100))
+	 * @param String $action  m,c,a参数，一般写成 cms|user|add 这样的m|c|a结构
+	 * @param array  $params  URL中其它参数
+	 * @param String $baseUrl 是否有默认URL，如果有，则
 	 */
-	public static function url($url, $baseUrl = '') {
+	public static function url($action, $params = array(), $baseUrl = '') {
 		$InitPHP_conf = InitPHP::getConfig();
+		$action = explode("|", $action);
+		$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
+		$baseUrl = rtrim($baseUrl, '/') . '/';
+		$ismodule = $InitPHP_conf['ismodule'];
 		switch ($InitPHP_conf['isuri']) {
 
 			case 'rewrite' :
-				$param = $paramArr = array();
-				$urlArr = explode('?', $url);
-				if (isset($urlArr[1])) {
-					$string = $ext_string = '';
-					$param = explode('&', $urlArr[1]);
-					foreach ($param as $v) {
-						$temp = explode('=', $v);
-						if ($temp[0] == 'm' || $temp[0] == 'c' || $temp[0] == 'a') {
-							$string .=  $temp[1] . '/';
-						} else {
-							$ext_string .= $temp[0].'='.$temp[1] . '&';
-						}
-					}
+				$actionStr = implode('/', $action);
+				$paramsStr = '';
+				if ($params) {
+					$paramsStr = '?' . http_build_query($params);
 				}
-				$ext_string = ($ext_string == '') ? '' : '?' . $ext_string;
-				$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
-				return rtrim($baseUrl, '/') . '/' . $string . $ext_string;
-				break;
-
-			case 'path' :
-				$param  = $paramArr = array();
-				$urlArr = explode('?', $url);
-				$file = $urlArr[0];
-				if (isset($urlArr[1])) {
-					$string = $string . '/';
-					$param = explode('&', $urlArr[1]);
-					foreach ($param as $v) {
-						$temp = explode('=', $v);
-						if ($temp[0] == 'm' || $temp[0] == 'c' || $temp[0] == 'a') {
-							$string .=  $temp[1] . '/';
-						} else {
-							$string .=  $temp[0] . '/' . $temp[1] . '/';
-						}
-					}
-				}
-				$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
-				return rtrim($baseUrl, '/') . '/' . ltrim($string, '/');
+				return $baseUrl . $actionStr . $paramsStr;
 				break;
 			
-			case 'html' :
-				$param = $paramArr = array();
-				$urlArr = explode('?', $url);
-				if (isset($urlArr[1])) {
-					$string = $ext_string = '';
-					$param = explode('&', $urlArr[1]);
-					foreach ($param as $v) {
-						$temp = explode('=', $v);
-						if ($temp[0] == 'm' || $temp[0] == 'c' || $temp[0] == 'a') {
-							$string .=  $temp[1] . '-';
-						} else {
-							$ext_string .= $temp[0].'='.$temp[1] . '&';
-						}
+			case 'path' :
+				$actionStr = implode('/', $action);
+				$paramsStr = '';
+				if ($params) {
+					foreach ($params as $k => $v) {
+						$paramsStr .= $k . '/' . $v . '/';
 					}
+					$paramsStr = '/' . $paramsStr;
 				}
-				$ext_string = ($ext_string == '') ? '' : '?' . $ext_string;
-				$string  =  rtrim($string, '-') . '.htm';
-				$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
-				return rtrim($baseUrl, '/') . '/' . $string . $ext_string;
+				return $baseUrl . $actionStr . $paramsStr;
 				break;
-
+				
+			case 'html' :
+				$actionStr = implode('-', $action);
+				$actionStr = $actionStr . '.htm';
+				$paramsStr = '';
+				if ($params) {
+					$paramsStr = '?' . http_build_query($params);
+				}
+				return $baseUrl . $actionStr . $paramsStr;
+				break;
+			
 			default:
-				return $url;
+				$actionStr = '';
+				if ($ismodule === true) {
+					$actionStr .= 'm=' . $action[0];
+					$actionStr .= '&c=' . $action[1];
+					$actionStr .= '&a=' . $action[2] . '&';
+				} else {
+					$actionStr .= 'c=' . $action[0];
+					$actionStr .= '&a=' . $action[1] . '&';
+				} 
+				$actionStr = '?' . $actionStr;
+				$paramsStr = '';
+				if ($params) {
+					$paramsStr = http_build_query($params);
+				}
+				return $baseUrl . $actionStr . $paramsStr;
 				break;
 		}
 	}
@@ -429,7 +439,7 @@ class Controller extends coreInit {
 		$this->view       = $this->load('view', 'v'); //导入View
 		$this->view->set_template_config($InitPHP_conf['template']); //设置模板
 		$this->view->assign('init_token', $this->controller->get_token()); //全局输出init_token标记
-		//注册全局变量，这样在Service和Dao中也能调用Controller中的类
+		//注册全局变量，这样在Service和Dao中通过$this->common也能调用Controller中的类
 		$this->register_global('common', $this->controller); 
 	}
 }

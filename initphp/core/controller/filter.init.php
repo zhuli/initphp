@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 2.0 国产PHP开发框架  Controller-filter 安全过滤类
+ * InitPHP 3.2.2 国产PHP开发框架  Controller-filter 安全过滤类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2011-10-09 
+ * $Dtime:2012-10-09  
 ***********************************************************************************/
 class filterInit extends validateInit {
 	
@@ -22,7 +22,7 @@ class filterInit extends validateInit {
 	 * @param  bool         $isfilter 变量是否过滤
 	 * @return string|array
 	 */
-	public function get_gp($value, $type = null,  $isfilter = true) {
+	public function get_gp($value, $type = null,  $isfilter = false) {
 		if ($type == 'U' || $type == 'D') {
 			parse_str(file_get_contents('php://input'), $requestData);
 		}
@@ -207,8 +207,8 @@ class filterInit extends validateInit {
 	 * @return string
 	 */
 	public function str_out($value) {
-		$badstr = array("<", ">", "%3C", "%3E", "'", '"');
-		$newstr = array("&lt;", "&gt;", "&lt;", "&gt;", "&quot;", "&#39;");
+		$badstr = array("&", '"', "'", "<", ">", "%3C", "%3E");
+		$newstr = array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;", "&lt;", "&gt;");
 		$value  = str_replace($newstr, $badstr, $value);
 		return stripslashes($value); //下划线
 	}

@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Cache API</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.5.1 Cache API</div>
+    <div class="header_right"><a href="6_4.htm">上一页</a> <a href="6_5_2.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">目录</div>
+<ul style="list-style:none;">
+  <li><a href="#$this->dao->cache->clear">$this->dao->cache->clear</a></li>
+  <li><a href="#$this->dao->cache->clear_all">$this->dao->cache->clear_all</a></li>
+  <li><a href="#$this->dao->cache->get">$this->dao->cache->get</a></li>
+  <li><a href="#$this->dao->cache->get_cache">$this->dao->cache->get_cache</a></li>
+  <li><a href="#$this->getCache()->page_cache_end">$this->getCache()->page_cache_end</a></li>
+  <li><a href="#$this->getCache()->page_cache_start">$this->getCache()->page_cache_start</a></li>
+  <li><a href="#$this->dao->cache->set">$this->dao->cache->set</a></li>
+</ul>
+<div class="nav"></div>
+
+<div class="title">1. $this->dao->cache->clear($key, $type = 'FILE') 清除缓存<a name="$this->dao->cache->clear"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>通过KEY值清除缓存，可以设置缓存类型，暂时支持FLIE MYSQL MEM。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$key</td>
+      <td>String </td>
+      <td>是</td>
+      <td>缓存键值 </td>
+    </tr>
+    <tr>
+      <td>$type </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+	
+	public $db = 'test';
+	public function test() {
+		$this->dao->cache->set('test', 'woshishen', 0, 'FILE'); //设置缓存
+		$test = $this->dao->cache->get('test', 'FILE'); //获取缓存
+		$this->dao->cache->clear('test', 'FILE'); //清除单个缓存
+		$this->dao->cache->clear_all('FILE'); //清除全部缓存
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">2. $this->dao->cache->clear_all($type = 'FILE') 清除所有缓存<a name="$this->dao->cache->clear_all"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>通过缓存类型清除缓存。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$type </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+	
+	public $db = 'test';
+	public function test() {
+		$this->dao->cache->set('test', 'woshishen', 0, 'FILE'); //设置缓存
+		$test = $this->dao->cache->get('test', 'FILE'); //获取缓存
+		$this->dao->cache->clear('test', 'FILE'); //清除单个缓存
+		$this->dao->cache->clear_all('FILE'); //清除全部缓存
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">3. $this->dao->cache->get($key, $type = 'FILE') 获取缓存值<a name="$this->dao->cache->get"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>通过KEY值获取缓存，可以设置缓存类型，暂时支持FLIE MYSQL MEM。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$key</td>
+      <td>String </td>
+      <td>是</td>
+      <td>缓存键值 </td>
+    </tr>
+    <tr>
+      <td>$type </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+	
+	public $db = 'test';
+	public function test() {
+		$this->dao->cache->set('test', 'woshishen', 0, 'FILE'); //设置缓存
+		$test = $this->dao->cache->get('test', 'FILE'); //获取缓存
+		$this->dao->cache->clear('test', 'FILE'); //清除单个缓存
+		$this->dao->cache->clear_all('FILE'); //清除全部缓存
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">4. $this->dao->cache->get_cache($type = 'FILE') 获取缓存对象<a name="$this->dao->cache->get_cache"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>获取缓存对象后，就可以直接调用缓存类里面的函数。例如：Memcache中的decrement就可以直接使用。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$type </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+	
+	public $db = 'test';
+	public function test() {
+		$this->dao->cache->get_cache($type = 'MEM')->decrement('num', -1); //自动减一
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">5. $this->getCache()->page_cache_end 页面缓存结束标记<a name="$this->getCache()->page_cache_end"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>该函数一般在Controller中使用，主要是用来做页面缓存用途。比如页面访问压力比较大，内容动态更新变化比较下，可以直接把整个页面存在内存中或者文件缓存中。</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); //Action白名单
+
+	public function run() {
+		$this->getCache()->page_cache_start("hello", 5, "MEM");
+		$this->view->set_tpl('index_run');
+		$this->view->display();
+		$this->getCache()->page_cache_end();
+	}
+	
+	public function test() {}
+
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">6. $this->getCache()->page_cache_start($key, $time = 0, $type = 'FILE') 页面缓存开始标记<a name="$this->getCache()->page_cache_start"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>该函数一般在Controller中使用，主要是用来做页面缓存用途。比如页面访问压力比较大，内容动态更新变化比较下，可以直接把整个页面存在内存中或者文件缓存中。</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$key</td>
+      <td>String </td>
+      <td>是</td>
+      <td>缓存键值 </td>
+    </tr>
+    <tr>
+      <td>$time </td>
+      <td>Int </td>
+      <td>否</td>
+      <td>缓存时间，0-永久缓存 </td>
+    </tr>
+    <tr>
+      <td>$type </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); //Action白名单
+
+	public function run() {
+		$this->getCache()->page_cache_start("hello", 5, "MEM");
+		$this->view->set_tpl('index_run');
+		$this->view->display();
+		$this->getCache()->page_cache_end();
+	}
+	
+	public function test() {}
+
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">7. $this->dao->cache->set($key, $value, $time = 0, $type = 'FILE')  设置缓存值<a name="$this->dao->cache->set"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>可以设置缓存KEY值和VALUE值。time缓存时间，0-永久缓存。type = 'FILE'缓存类型设置，暂时支持FLIE MYSQL MEM。在Dao中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+    <tr>
+      <td>$key</td>
+      <td>String </td>
+      <td>是</td>
+      <td>缓存键值 </td>
+    </tr>
+	    <tr>
+      <td>$value </td>
+      <td>String </td>
+      <td>是</td>
+      <td>缓存值 </td>
+    </tr>
+		    <tr>
+      <td>$time  </td>
+      <td>Int </td>
+      <td>否</td>
+      <td>缓存时间，0-永久缓存 </td>
+    </tr>
+			    <tr>
+      <td>$type  </td>
+      <td>String </td>
+      <td>否</td>
+      <td>缓存类型，值： FLIE MYSQL MEM </td>
+    </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class testaDao extends Dao {
+	
+	public $db = 'test';
+	public function test() {
+		$this->dao->cache->set('test', 'woshishen', 0, 'FILE'); //设置缓存
+		$test = $this->dao->cache->get('test', 'FILE'); //获取缓存
+		$this->dao->cache->clear('test', 'FILE'); //清除单个缓存
+		$this->dao->cache->clear_all('FILE'); //清除全部缓存
+	}
+}
+</pre>
+<div class="nav"></div>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

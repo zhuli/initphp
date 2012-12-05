@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - Error</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.6.3 Error</div>
+    <div class="header_right"><a href="6_6_2.htm">上一页</a> <a href="6_6_4.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>工具描述：</h3>
+</div>
+<p>错误输出工具，可以输出JSON，HTML，也可以自定义输出Error模板。你的开发中如果使用到InitPHP这个Error工具的话，应该会经常用到，当然你也可以自己设计一个Error。属于InitPHP框架工具类，需要通过$this->getUtil()方法获取</p>
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$error= $this->getUtil('error'); 
+</pre>
+<div class="nav"></div>
+
+<div class="title">
+  <h4>接口描述：</h4>
+</div>
+<p>
+接口：$error->add_error($error_message) Error机制 添加一个error
+</p>
+<table>
+    <tr>
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$error_message</td>
+      <td>String</td>
+      <td>是</td>
+      <td>Error信息</td>
+    </tr>
+</table>
+
+<p>
+接口：$error->send_error($error_message, $error_type = 'json') Error机制 输出一个error
+</p>
+<table>
+    <tr>
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$error_message</td>
+      <td>String</td>
+      <td>是</td>
+      <td>Error信息</td>
+    </tr>
+	    <tr>
+      <td>$error_type</td>
+      <td>String</td>
+      <td>否</td>
+      <td>错误类型 json，xml，json,html</td>
+    </tr>
+</table>
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$error = $this->getUtil('error'); 
+		$error->add_error('用户名不正确');
+		$error->send_error('用户名密码不正确');
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'Hello World';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>
