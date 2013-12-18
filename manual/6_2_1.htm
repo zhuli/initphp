@@ -21,6 +21,9 @@
   <li><a href="#$this->controller->check_token">$this->controller->check_token</a></li>
   <li><a href="#$this->controller->get_token">$this->controller->get_token</a></li>
   <li><a href="#$this->controller->redirect">$this->controller->redirect</a></li>
+  <li><a href="#$this->controller->return404">$this->controller->return404</a></li>
+  <li><a href="#$this->controller->return200">$this->controller->return200</a></li>
+  <li><a href="#$this->controller->return500">$this->controller->return500</a></li>
 </ul>
 <div class="nav"></div>
 <div class="title">1. $this->controller->ajax_return($status, $message = '', $data = array(), $type = 'json') AJAX返回数据结构<a name="$this->controller->ajax_return"></a></div>
@@ -205,6 +208,69 @@ class indexController extends Controller {
 		return InitPHP::getService('test','test');
 	}
 
+}
+</pre>
+
+<div class="nav"></div>
+<div class="title">5. $this->controller->return404() 返回http404<a name="$this->controller->return404"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>返回http404。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->controller->return404()
+	}
+	
+}
+</pre>
+
+<div class="nav"></div>
+<div class="title">6. $this->controller->return200() 返回http200<a name="$this->controller->return200"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>返回http200。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->controller->return200()
+	}
+	
+}
+</pre>
+
+<div class="nav"></div>
+<div class="title">7. $this->controller->return500() 返回http500<a name="$this->controller->return500"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>返回http500。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->controller->return500()
+	}
+	
 }
 </pre>
 <div class="nav"></div>

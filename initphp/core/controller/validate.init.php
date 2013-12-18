@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架  Controller-validate 数据基础验证类
+ * InitPHP 3.3 国产PHP开发框架  Controller-validate 数据基础验证类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -74,8 +74,8 @@ class validateInit extends requestInit {
 	 *  @return bool
 	 */
 	public function is_empty($value) {
-		if (empty($value) || $value=="") return false;
-		return true;
+		if (empty($value) || $value=="") return true;
+		return false;
 	}
 	
 	/**
@@ -116,7 +116,7 @@ class validateInit extends requestInit {
 	 *  @return bool
 	 */
 	public function is_number($value) {
-		return preg_match('/\d+$/', trim($value));
+		return preg_match('/^\d{0,}$/', trim($value));
 	}
 	
 	/**

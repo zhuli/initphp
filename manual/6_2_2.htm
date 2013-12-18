@@ -212,7 +212,7 @@ public function run() {
 <pre id="PHP" class="prettyprint">
 public function run() {
 	$value= 'asdas';
-	if (!$this->controller->is_empty($value)) {
+	if ($this->controller->is_empty($value)) {
 		exit('不能为空');
 	} 
 	$this->view->display(); //模板显示

@@ -12,7 +12,6 @@ class indexController extends Controller {
 		$this->view->set_tpl("index_run"); //中间的模板
 		$this->view->set_tpl("index_header", "F"); //头部模板
 		$this->view->set_tpl("index_footer", "L"); //脚步模板
-
 		$tpls = $this->view->get_tpl(); //统计输出的模板
 		$this->view->assign("tpls", $tpls);
 		$this->view->display(); //模板展示

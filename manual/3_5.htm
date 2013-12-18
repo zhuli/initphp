@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 - A PHP Framework - 控制器白名单</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第3章 3.5 关于控制器的白名单</div>
+    <div class="header_right"><a href="3_4.htm">上一页</a> <a href="4_1.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">关于控制器的白名单：</div>
+<ul>
+  <li>控制器白名单的设计给很多人开发带来了一些不便，但是设计这个白名单后，可以让控制器中的public方法更加安全有效。</li>
+  <li>InitPHP3.3版本之后，可以对白名单进行指定的HTTP请求方法，例如post , get , put , del操作。</li>
+  <li>Action 可以指定HTTP的请求方式，指定单个 例如：getAc|get 通过|符号分隔</li>
+  <li>如果指定多个方法，方法之间用-符号分隔 例如：getAc|get-post-del 这个允许 GET POST 和 DEL操作 </li>
+  <li>操作方式一共四种：get,post,del,put</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * DEMO
+ * @author zhuli 
+ */
+class indexController extends Controller {
+	
+	public $initphp_list = array('test', 'getAc|get', 'postAc|post', 'putAc|put', 'delAc|del'); //Action白名单
+
+	public function run() {    
+		echo "Hello World，This is A InitPHP FrameWork Demo"; 
+	}
+	
+	public function test() {
+		$curl = $this->getLibrary("curl");
+		echo "GET:";
+		echo $curl->get("http://127.0.0.1/initphp/trunk/demo/hello_world_demo/www/?a=getAc");
+		echo "POST:";
+		echo $curl->post("http://127.0.0.1/initphp/trunk/demo/hello_world_demo/www/?a=postAc");
+		echo "PUT:";
+		echo $curl->put("http://127.0.0.1/initphp/trunk/demo/hello_world_demo/www/?a=putAc");
+		echo "DEL:";
+		echo $curl->del("http://127.0.0.1/initphp/trunk/demo/hello_world_demo/www/?a=delAc");
+	}
+	
+	public function getAc() {
+		echo "只能是HTTP GET请求的时候才能访问到";
+	}
+	
+	public function postAc() {
+		echo "只能是HTTP POST请求的时候才能访问到";
+	}
+	
+	public function putAc() {
+		echo "只能是HTTP PUT请求的时候才能访问到";
+	}
+	
+	public function delAc() {
+		echo "只能是HTTP DEL请求的时候才能访问到";
+	}
+	
+} 
+</pre>
+
+
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

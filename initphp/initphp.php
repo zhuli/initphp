@@ -1,12 +1,12 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架  框架入口文件 核心框架文件
+ * InitPHP 3.3 国产PHP开发框架  框架入口文件 核心框架文件
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2012-11-27
+ * $Dtime:2013-5-29
 ***********************************************************************************/
 require_once('initphp.conf.php'); //导入框架配置类
 require_once('init/core.init.php'); //导入核心类文件
@@ -232,7 +232,6 @@ class InitPHP extends coreInit {
 		$InitPHP_conf = InitPHP::getConfig();
 		$action = explode("|", $action);
 		$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
-		$baseUrl = rtrim($baseUrl, '/') . '/';
 		$ismodule = $InitPHP_conf['ismodule'];
 		switch ($InitPHP_conf['isuri']) {
 

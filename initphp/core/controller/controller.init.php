@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架  Controller-controller 控制器基类
+ * InitPHP 3.3 国产PHP开发框架  Controller-controller 控制器基类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -67,6 +67,37 @@ class controllerInit extends filterInit{
 		} else {
 			exit("<meta http-equiv='Refresh' content='" . $time . ";URL=" .$url. "'>");
 		}
+	}
+	
+	/**
+	 *	返回404
+	 *  Controller中使用方法：$this->controller->return404()
+	 *  @return 
+	 */
+	public function return404() {
+   		header('HTTP/1.1 404 Not Found');
+    	header("status: 404 Not Found"); 
+		return;
+	}
+	
+	/**
+	 *	返回404
+	 *  Controller中使用方法：$this->controller->return200()
+	 *  @return 
+	 */
+	public function return200() {
+		header("HTTP/1.1 200 OK"); 
+		return;
+	}
+	
+	/**
+	 *	返回500
+	 *  Controller中使用方法：$this->controller->return500()
+	 *  @return 
+	 */
+	public function return500() {
+		header('HTTP/1.1 500 Internal Server Error');
+		return;
 	}
 	
 	/**

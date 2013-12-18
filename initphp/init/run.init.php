@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架 - 框架运行器，所有的框架运行都需要通过此控制器
+ * InitPHP 3.3 国产PHP开发框架 - 框架运行器，所有的框架运行都需要通过此控制器
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2012-11-27
+ * $Dtime:2013-5-29
 ***********************************************************************************/
 class runInit {
 
@@ -58,10 +58,15 @@ class runInit {
 			$module = '';
 		} else {
 			$module      = $_GET['m'];
-			if (!in_array($module, $this->module_list) || empty($module)) {
+			//不为空又在列表中
+			if (!in_array($module, $this->module_list) && !empty($module)) {
 				$module    = $this->default_module;
 				$controller= $this->default_controller . $this->controller_postfix;
 				$_GET['a'] = $this->default_action;
+			}
+			//如果为空，则走默认
+			if (empty($module)) {
+				$module    = $this->default_module;
 			}
 			$module      = $module . '/';
 		}
@@ -87,7 +92,17 @@ class runInit {
 	 */
 	private function run_action($controller) {
 		$action = trim($_GET['a']);
-		if (!in_array($action, $controller->initphp_list)) $action = $this->default_action; //白名单
+		list($whiteList, $methodList) = $this->parseWhiteList($controller->initphp_list);
+		if (!in_array($action, $whiteList)) {
+			$action = $this->default_action; //白名单
+		} else {
+			if ($methodList[$action]) {
+				$method = strtolower($_SERVER['REQUEST_METHOD']);
+				if (!in_array($method, $methodList[$action])) { //检查提交的HTTP METHOD
+					InitPHP::initError('Can not find action : ' . $action . "  HTTP METHOD: " . $method);
+				}
+			}
+		}
 		$action = $action . $this->action_postfix;
 		/* REST 模式*/
 		$action = $this->run_rest($controller, $action);
@@ -96,6 +111,30 @@ class runInit {
 		}
 		/* REST形式访问 */
 		$controller->$action();
+	}
+	
+	/**
+	 * 解析白名单
+	 * 白名单参数支持指定GET POST PUT DEL 等HTTP METHOD操作
+	 * 白名单参数：array('test', 'user|post')
+	 * @param object $controller 控制器对象
+	 * @return file
+	 */
+	private function parseWhiteList($initphp_list) {
+		$whiteList = $methodList = array();
+		foreach ($initphp_list as  $value) {
+			if (strpos($value, "|") == false) {
+				$whiteList[] = $value;
+			} else {
+				$temp = explode('|', $value);
+				$whiteList[] = $temp[0];
+				$methodTemp = explode('-', $temp[1]);
+				foreach ($methodTemp as $v) {
+					$methodList[$temp[0]][] = $v;
+				}
+			}
+		}
+		return array($whiteList, $methodList);
 	}
 	
 	/**

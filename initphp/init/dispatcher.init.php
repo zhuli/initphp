@@ -1,13 +1,13 @@
 <?php 
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架  - 路由分发核心类，将m-c-a URL重写
+ * InitPHP 3.3 国产PHP开发框架  - 路由分发核心类，将m-c-a URL重写
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2012-11-27
+ * $Dtime:2013-5-29
 ***********************************************************************************/
 class dispatcherInit {
 	
@@ -56,7 +56,6 @@ class dispatcherInit {
     	if ($posi) $uri = substr($uri,0,$posi);
     	$urlArr = parse_url($InitPHP_conf['url']);
 		$request = str_replace(trim($urlArr['path'], '/'),'', $uri);
-		$request = strtolower($request);
 		if (strpos($request, '.php')) {
 			$request = explode('.php', $request);
 			$request = $request[1];

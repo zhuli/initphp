@@ -1,13 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');   
 /*********************************************************************************
- * InitPHP 3.2.2 国产PHP开发框架  扩展类库-文件操作类
+ * InitPHP 3.3 国产PHP开发框架  扩展类库-文件操作类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
  * $Author:zhuli
- * $Dtime:2012-11-27 
+ * $Dtime:2013-5-29 
 ***********************************************************************************/
 class fileInit {
 	
@@ -33,7 +33,7 @@ class fileInit {
 		if ($type == 1) {
 			if (file_exists($filename)) $this->del_file($filename); //删除文件
 			$this->create_file($filename);
-			$this->write_file($filename, $content, 2);
+			return $this->write_file($filename, $content, 2);
 		} else {
 			if (!is_writable($filename)) return false;
 			$handle = @fopen($filename, 'a');
