@@ -1,4 +1,4 @@
-The InitPHP is free software. It is released under the terms of
+﻿The InitPHP is free software. It is released under the terms of
 the following BSD License.
 
 Copyright © 2010-2012 by zhuli software studio LLC (http://www.initphp.com)
@@ -13,7 +13,7 @@ are met:
    notice, this list of conditions and the following disclaimer in
    the documentation and/or other materials provided with the
    distribution.
- * Neither the name of Yii Software LLC nor the names of its
+ * Neither the name of InitPHP Software LLC nor the names of its
    contributors may be used to endorse or promote products derived
    from this software without specific prior written permission.
 
