@@ -290,7 +290,7 @@ class uploadInit {
 	 */
 	private function escapeDir($dir) {
 		$dir = str_replace(array("'",'#','=','`','$','%','&',';'), '', $dir);
-		return trim(preg_replace('/(\/){2,}|(\\\){1,}/', '/', $dir), '/');
+		return rtrim(preg_replace('/(\/){2,}|(\\\){1,}/', '/', $dir), '/');
 	}
 	
 	/**
