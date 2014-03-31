@@ -54,9 +54,9 @@ class nosqlInit {
 			require('driver/' . $file);
 			nosqlInit::$instance['require'][$file] = TRUE;
 		}
-		if (nosqlInit::$instance['class'][$class] !== TRUE) {
-			nosqlInit::$instance['class'][$class] = TRUE;
-			return new $class;
+		if (!nosqlInit::$instance['class'][$class]) {
+			nosqlInit::$instance['class'][$class] = new $class;
+			return nosqlInit::$instance['class'][$class];
 		} else {
 			return nosqlInit::$instance['class'][$class];
 		}
