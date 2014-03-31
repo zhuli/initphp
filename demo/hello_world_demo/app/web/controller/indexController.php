@@ -8,15 +8,7 @@ class indexController extends Controller {
 	public $initphp_list = array('test', 'getAc|get', 'postAc|post', 'putAc|put', 'delAc|del'); //Action白名单
 
 	public function run() { 
-		$curl = $this->getLibrary("curl");
-		try {
-		$a = $curl->get("http://127.0.0.1:8090");
-		} catch (Exception $e) {
-			echo "error";
-		}
-		print($a);
-		
-		echo $_GET["username"];
+		echo "Hello World";
 	}
 	
 	public function test() {
