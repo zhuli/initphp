@@ -19,7 +19,7 @@ class curlInit {
 	 * @param string $proxy 是否代理
 	 * @param int    $timeout 请求时间
 	 */
-	public function get($url, $proxy = null, $timeout = 30) {
+	public function get($url, $proxy = null, $timeout = 10) {
 		if (!$url) return false;
 		$ssl = substr($url, 0, 8) == 'https://' ? true : false;
 		$curl = curl_init();

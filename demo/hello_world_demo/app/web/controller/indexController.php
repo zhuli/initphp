@@ -7,8 +7,8 @@ class indexController extends Controller {
 	
 	public $initphp_list = array('test', 'getAc|get', 'postAc|post', 'putAc|put', 'delAc|del'); //Action白名单
 
-	public function run() { 
-		echo "Hello World";
+	public function run() {    
+		echo "<h1>Hello World，This is A InitPHP FrameWork Demo</h1>"; 
 	}
 	
 	public function test() {

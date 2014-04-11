@@ -6,14 +6,6 @@ class userService extends Service {
 		return $this->_getUserDao()->addUser($user);
 	}
 	
-	public function getUser() {
-		return "zhuli";
-	}
-	
-	public function getAdd($username) {
-		return array($username, 10);
-	}
-	
 	/**
 	 * @return userDao
 	 */

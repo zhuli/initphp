@@ -1,4 +1,4 @@
-1. 新增控制器白名单可以指定HTTP METHOD方法
-2. 新增renturn200 return404 return500方法
-3. 修复is_empty方法
-4. 修复CURL 参数传参问题
+1. 修复validate.init.php is_number方法BUG
+2. 修复nosql多个连接hander的时候的BUG
+3. 修复function.init.php中generateHtmlOptions方法BUG
+4. 修复文件上传 escapeDir BUG

@@ -5,15 +5,10 @@
  */
 class indexController extends Controller {
 	
-	public $initphp_list = array('post', "test"); //Action白名单
+	public $initphp_list = array('post'); //Action白名单
 
-	public function run() {  
+	public function run() {    
 		$this->view->display("index_run"); //展示模板页面
-		
-	}
-	
-	public function test() {
-		$this->load('unittesting', 'u')->run($file = '');  
 	}
 	
 	public function post() {
