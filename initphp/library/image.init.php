@@ -17,7 +17,7 @@ class imageInit {
 	 * @param stirng $newname缩略后的新图 
 	 * @param int    $width  宽度
 	 * @param int    $height 高度
-	 * @param bool   $isauto 是否根据原始图片的长宽比自动缩略，true-是的|false-不是
+	 * @param bool   $isauto 缩略方式，true-保持比例缩放|false-超出部分裁剪
 	 */
 	public function make_thumb($source, $newname, $width = 100, $height = 100, $isauto = true) {
 		if (!file_exists($source)) return false;
@@ -33,9 +33,25 @@ class imageInit {
 			$black = ImageColorAllocate($thumb,0,0,0); //着色
 			$bgTransparent = ImageColorTransparent($thumb,$black);
 		}
-		/* 是否根据原始图片的长宽比自动缩略 */
+		/*根据原始图片的长宽比自动缩略*/
 		$src_x = $src_y = 0;
+		
+		//保持比例缩放
 		if ($isauto == true) {
+			$x_ratio = $width / $image_info['width'];
+			$y_ratio = $height / $image_info['height'];
+			if(($x_ratio * $image_info['height']) < $height) {
+				$h = ceil($x_ratio * $image_info['height']);
+				$w = $width;
+			} else {
+				$w = ceil($y_ratio * $image_info['width']);
+				$h = $height;
+			}
+			$thumb = $imagecreate($w, $h); //创建一个图片-画布
+			$imagecopyre($thumb, $source, 0, 0, 0, 0, $w, $h, $image_info['width'], $image_info['height']); //拷贝
+		}
+		//超出部分裁剪
+		else{
 			if ($image_info['width'] < $image_info['height']) {
 				$src_y = round(($image_info['height'] - $image_info['width']) / 2);
 				$image_info['height'] = $image_info['width'];
@@ -43,9 +59,9 @@ class imageInit {
 				$src_x = round(($image_info['width'] - $image_info['height']) / 2);
 				$image_info['width'] = $image_info['height'];
 			}
+			/* 拷贝和创建图像 */
+			$imagecopyre($thumb, $source, 0, 0, $src_x, $src_y, $width, $height, $image_info['width'], $image_info['height']);
 		}
-		/* 拷贝和创建图像 */
-		$imagecopyre($thumb, $source, 0, 0, $src_x, $src_y, $width, $height, $image_info['width'], $image_info['height']); //拷贝
 		$result = $this->make($image_info['type'], $thumb, $newname);
 		if (!$result) return array(); //缩略图创建失败
 		imagedestroy($thumb);

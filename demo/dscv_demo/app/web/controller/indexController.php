@@ -8,6 +8,8 @@ class indexController extends Controller {
 	public $initphp_list = array('post'); //Action白名单
 
 	public function run() {    
+		$log = $this->getUtil("log");
+		$log->write("hello");
 		$this->view->display("index_run"); //展示模板页面
 	}
 	

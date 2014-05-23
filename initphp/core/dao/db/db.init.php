@@ -18,7 +18,19 @@ class dbInit extends sqlbuildInit {
 	 */
 	public function query($sql, $is_set_default = true) {
 		$this->get_link_id($sql); //link_id获取
+		$InitPHP_conf = InitPHP::getConfig();
+		if($InitPHP_conf['is_debug']==true) $start   =   microtime();
 		$query = $this->db->query($sql);
+		if($InitPHP_conf['is_debug']==true) $end   =   microtime();
+		//sql query debug		
+		if($InitPHP_conf['is_debug']==true){
+			$k=count($InitPHP_conf['sqlcontrolarr']);
+			$InitPHP_conf['sqlcontrolarr'][$k]['sql']=$sql;
+			$costTime=substr(($end-$start),0,7);
+			$InitPHP_conf['sqlcontrolarr'][$k]['queryTime']=$costTime;
+			$InitPHP_conf['sqlcontrolarr'][$k]['affectedRows']=$this->affected_rows();
+			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);	
+		}
 		if ($this->db->error()) InitPHP::initError($this->db->error());
 		if ($is_set_default) $this->set_default_link_id(); //设置默认的link_id
 		return $query;

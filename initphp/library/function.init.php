@@ -12,6 +12,26 @@ if (!defined('IS_INITPHP')) exit('Access Denied!');
 class functionInit {
 
 	/**
+	 * 方法库-sign签名方法
+	 * @param $array 需要加密的参数 
+	 * @param $secret 秘钥
+	 * @param $signName sign的名称，sign不会进行加密
+	 */
+	public function sign($array, $secret, $signName = "sign") {
+		if (count($array) == 0) {
+			return "";
+		}
+		ksort($array); //按照升序排序
+		$str = "";
+		foreach ($array as $key => $value) {
+			if ($signName == $key) continue;
+			$str .= $key . "=" . $value . "&";
+		}
+		$str = rtrim($str, "&");
+		return md5($str . $secret);
+	}
+
+	/**
 	 * 方法库-获取随机值
 	 * @return string  
 	 */

@@ -13,7 +13,7 @@ class logInit {
 
 	private $default_log_path  = 'data/'; //默认日志目录
 	private $default_file_size = '1024000'; //默认日志文件大小
-	private $default_file_name = 'InitPHP_Log.log'; //默认日志文件名称
+	private $default_file_name = 'initphp_biz_error.log'; //默认日志文件名称
 	
 	/**
 	 * 写日志-直接写入日志文件或者邮件
@@ -36,7 +36,8 @@ class logInit {
 	 * @return string
 	 */
 	private function get_file_log_name() {
-		return $this->default_log_path .  $this->default_file_name;
+		$config = InitPHP::getConfig();
+		return $config['log_dir'] .  $this->default_file_name;
 	}
 		
 	/**

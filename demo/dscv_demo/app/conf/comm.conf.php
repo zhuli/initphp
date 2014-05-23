@@ -25,6 +25,10 @@ $InitPHP_conf['url'] = 'http://127.0.0.1/initphp_3.0/demo/';
  */
 $InitPHP_conf['is_debug'] = true; //开启-正式上线请关闭
 /**
+ * 日志目录
+ */
+$InitPHP_conf['log_dir'] = '/home/admin/logs/'; //日志目录,必须配置
+/**
  * 路由访问方式
  * 1. 如果为true 则开启path访问方式，否则关闭
  * 2. default：index.php?m=user&c=index&a=run
