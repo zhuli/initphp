@@ -158,7 +158,7 @@ class imageInit {
 	 * @return bool
 	 */
 	private function make($type, $image, $filename, $quality = '75') {
-		$file_type = ($type !== 'jpeg') ? $type : 'jpg';
+		$file_type = ($type !== 'jpg') ? $type : 'jpeg';
 		$filename = $filename . '.' . $file_type;
 		$this->createFolder(dirname($filename)); //创建目录 
 		$makeimage = 'image' . $type;  
