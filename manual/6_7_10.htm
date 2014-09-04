@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - 静态页面生成</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.7.10 静态页面生成</div>
+    <div class="header_right"><a href="6_7_9.htm">上一页</a> <a href="6_7_11.htm">下一页</a> </div>
+  </div>
+</div>
+
+
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>静态页面生成类。属于InitPHP框架扩展类，需要通过$this->getLibrary()方法获取</p>
+
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$html = $this->getLibrary('html'); 
+</pre>
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="php" class="php">
+//静态页面生成路径-类文件中 
+private $html_path = 'data/html/'; 
+
+//静态页面目录 //生成静态页面 
+$html = $this->getLibrary('html'); 
+$html->start(); //开启ob_start(),打开缓冲区 echo '后台管理系统'; 
+$html->end(100); //结束点，100代表key值 
+$html->get(100); //导入静态页面</pre>
+<div class="title">
+  <h3>具体类：</h3>
+</div>
+<pre id="php" class="php">
+if (!defined('IS_INITPHP')) exit('Access Denied!');   
+/*********************************************************************************
+ * InitPHP 2.1 国产PHP开发框架  扩展类库-静态页面生成
+ *-------------------------------------------------------------------------------
+ * 版权所有: CopyRight By initphp.com
+ * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
+ *-------------------------------------------------------------------------------
+ * $Author:zhuli
+ * $Dtime:2011-10-09 
+***********************************************************************************/  
+class htmlInit {
+
+	private $html_path = 'data/html/'; //静态页面目录
+	private $key; //生成的HTML静态页面对应的KEY值
+	private $ismd5 = false; //生成的文件名是否MD5加密
+	
+	/**
+	 *	静态页面-开启ob_start(),打开缓冲区
+	 *  @return 
+	 */
+	public function start() {
+		return ob_start();
+	}
+	
+	/**
+	 *	静态页面-生成静态页面，$key值是生成页面的唯一标识符
+	 * 	@param  string  $key  静态页面标识符，可以用id代替
+	 *  @return 
+	 */
+	public function end($key) {
+		$this->key = $key;
+		$this->html(); //生成HTML文件
+		return ob_end_clean(); //清空缓冲
+	}
+	
+	/**
+	 *	静态页面-获取静态页面
+	 * 	@param  string  $key  静态页面标识符，可以用id代替
+	 *  @return 
+	 */
+	public function get($key) {
+		$filename = $this->get_filename($key);
+		if (!$filename || !file_exists($filename)) return false;
+		include($filename);
+		return true;
+	}
+	
+	/**
+	 *	静态页面-生成静态页面
+	 *  @return 
+	 */
+	private function html() {
+		$filename = $this->get_filename($this->key);
+		if (!$filename) return false;
+		return @file_put_contents($filename, ob_get_contents());
+	}
+	
+	/**
+	 *	静态页面-静态页面文件
+	 *  @return 
+	 */
+	private function get_filename($key) {
+		$filename = ($this->ismd5 == true) ? md5($key) : $key;
+		if (!is_dir($this->html_path)) return false;
+		return $this->html_path . '/' . $filename . '.htm';
+	}
+}
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

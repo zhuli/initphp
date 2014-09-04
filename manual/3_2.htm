@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - MVC分层</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第3章 3.2 MVC分层</div>
+    <div class="header_right"><a href="3_1.htm">上一页</a> <a href="3_3.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">MVC分层：</div>
+<ul>
+  <li>MVC分层是web开发比较常用的分层方式，也是比较合理通用的方式</li>
+  <li>MVC分层将web分层三层：模型层，控制层和视图层</li>
+  <li>MVC分层将PHP代码和HTML进行了分离，使项目更加整洁和清晰</li>
+  <li>InitPHP默认建议DSCV分层方式，同样也支持MVC分层，DSCV方式将MVC分层的M层分成DAO和Service层。使用MVC分层，只需要在Controller中直接调用InitPHP::getDao()的类就能实现。</li>
+</ul>
+<p>在Controller中直接调用Dao类,就可以实现MVC分层。即不使用Service层。</p>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$data = array('id' => 100);
+		$this->getTestDao()->addTest($data);
+		$this->view->display(); //模板显示
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestDao() {
+		return InitPHP::getDao('test','test');
+	}
+
+}</pre>
+<div class="title">DSCV分层实例：</div>
+<ul>
+  <li>DSCV分层：Dao（数据层），Service（业务服务层），Controller（控制层），View（视图层）</li>
+  <li>DSCV分层最大的特点是将MVC的模型层分离成Dao数据层和Service服务层</li>
+  <li>DSCV分层的好处是让各个层次的职责更加明确，数据层更加专注数据操作（SQL操作，缓存操作），业务服务层更加专注提供控制层通用的函数接口</li>
+  <li>Service一般是针对业务的，例如用户类，UserService将提供用户注册，用户信息修改等接口，Service可以让Controller来调用。Service中获取数据通过Dao来实现，一个复杂的Service会对应多个Dao</li>
+</ul>
+<p>Dao层需要继承框架中的Dao类（Dao基类）。Dao层可以使用$this->dao调用框架中提供的Db和Cache接口。调用Dao的方法是全局方法：InitPHP::getDao('Dao名称')。</p>
+<pre id="PHP" class="prettyprint">
+class testDao extends Dao {
+	public function test() {
+		$this->dao->db->insert(array('name' => 'cccccccc'), 'test');
+		print_r($this->dao->db->get_all('test'));
+	}
+}</pre>
+<p>Service层需要继承框架中的Service类（Service基类）。Service层可以使用$this->service调用框架中提供的接口。调用Service的方法是全局方法：InitPHP::getService('Service名称')</p>
+<pre id="PHP" class="prettyprint">
+class testService extends Service {
+	public function test() {
+		$this->getTestaDao()->test();
+	}
+	/**
+	 * @return testDao
+	 */
+	private function getTestDao() {
+		return InitPHP::getDao('test', 'test');
+	}
+	/**
+	 * @return testaDao
+	 */
+	private function getTestaDao() {
+		return InitPHP::getDao('testa', 'test');
+	}
+}</pre>
+<p>Controller层需要继承框架中的Controller类（Controller基类）。Controller层可以使用$this->controller和$this->view调用框架中提供的接口</p>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		echo '< img src="http://127.0.0.1/initphp2/demo/index.php?c=index&a=test">';
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}</pre>
+<p>View层，模板层</p>
+<pre id="PHP" class="prettyprint">
+asdddddddddddddddddddd
+<div>asdasd</div>
+&lt!--{echo $a;}--&gt
+</pre>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - 配置文件</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第2章 2.3 配置文件</div>
+    <div class="header_right"><a href="2_2.htm">上一页</a> <a href="2_4.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">配置文件：</div>
+<ul>
+  <li>框架中有initphp.conf.php这个配置文件，需要自定义的部分，可以拷贝出来在conf/conf.php中覆盖配置</li>
+  <li>也可以自定义一些配置参数</li>
+  <li>写Hello World不需要使用数据库，其他的也是使用默认的配置</li>
+  <li>如果要进行配置，主要配置Controller控制器部分就行了</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * Controller控制器配置参数
+ * 1. 你可以配置控制器默认的文件夹，默认的后缀，Action默认后缀，默认执行的Action和Controller
+ * 2. 一般情况下，你可以不需要修改该配置参数
+ * 3. $InitPHP_conf['ismodule']参数，当你的项目比较大的时候，可以选用module方式，
+ * 开启module后，你的URL种需要带m的参数，原始：index.php?c=index&a=run, 加module：
+ * index.php?m=user&c=index&a=run , module就是$InitPHP_conf['controller']['path']目录下的
+ * 一个文件夹名称，请用小写文件夹名称
+ */
+$InitPHP_conf['ismodule'] = false; //开启module方式
+$InitPHP_conf['controller']['path']                  = 'web/controller/'; 
+$InitPHP_conf['controller']['controller_postfix']    = 'Controller'; //控制器文件后缀名
+$InitPHP_conf['controller']['action_postfix']        = ''; //Action函数名称后缀
+$InitPHP_conf['controller']['default_controller']    = 'index'; //默认执行的控制器名称
+$InitPHP_conf['controller']['default_action']        = 'run'; //默认执行的Action函数
+$InitPHP_conf['controller']['module_list']           = array('user', 'index'); //module白名单
+$InitPHP_conf['controller']['default_module']        = 'index'; //默认执行module
+$InitPHP_conf['controller']['default_before_action'] = 'before'; //默认前置的ACTION名称  
+$InitPHP_conf['controller']['default_after_action']  = 'after'; //默认后置ACTION名称
+</pre>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

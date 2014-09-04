@@ -1,0 +1,5 @@
+1. 新增框架拦截器
+2. 修改框架默认Module，Controller，Action逻辑，如果参数不存在则返回404错误页
+3. 修改获取IP地址的函数BUG
+4. 新增验证码增强类
+感谢 Anran <id0612@gmail.com>提供的支持

@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Request API</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.2.3 Request API</div>
+    <div class="header_right"><a href="6_2_2.htm">上一页</a> <a href="6_2_4.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">目录</div>
+<ul style="list-style:none;">
+  <li><a href="#$this->controller->get_cookie">$this->controller->get_cookie</a></li>
+  <li><a href="#$this->controller->get_env">$this->controller->get_env</a></li>
+  <li><a href="#$this->controller->get_get">$this->controller->get_get</a></li>
+  <li><a href="#$this->controller->get_ip">$this->controller->get_ip</a></li>
+  <li><a href="#$this->controller->get_php_self">$this->controller->get_php_self</a></li>
+  <li><a href="#$this->controller->get_post">$this->controller->get_post</a></li>
+  <li><a href="#$this->controller->get_request_time">$this->controller->get_request_time</a></li>
+  <li><a href="#$this->controller->get_service_name">$this->controller->get_service_name</a></li>
+  <li><a href="#$this->controller->get_service">$this->controller->get_service</a></li>
+  <li><a href="#$this->controller->get_session">$this->controller->get_session</a></li>
+  <li><a href="#$this->controller->get_uri">$this->controller->get_uri</a></li>
+  <li><a href="#$this->controller->get_useragent">$this->controller->get_useragent</a></li>
+  <li><a href="#$this->controller->is_ajax">$this->controller->is_ajax</a></li>
+  <li><a href="#$this->controller->is_get">$this->controller->is_get</a></li>
+  <li><a href="#$this->controller->is_post">$this->controller->is_post</a></li>
+</ul>
+<div class="nav"></div>
+<div class="title">1. $this->controller->get_cookie($name = '') Request-获取COOKIE信息<a name="$this->controller->get_cookie"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取COOKIE数组，不为空则获取单个COOKIE。在Controller中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_COOKIE值，如果为空返回整个$_COOKIE数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	setcookie('username', 'sssssssssss', time()+35450);
+	echo $this->controller->get_cookie('username');
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">2. $this->controller->get_env($name = '') Request-获取ENV信息<a name="$this->controller->get_env"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取ENV数组，不为空则获取单个ENV。在Controller中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_ENV值，如果为空返回整个$_ENV数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$env = $this->controller->get_env();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">3. $this->controller->get_get($name = '') Request-获取GET的值<a name="$this->controller->get_get"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取GET数组，不为空则获取单个GET。获取POST和GET数据，尽量走get_gp函数，这个函数没有字符串过滤，安全性不高。在Controller中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_GET值，如果为空返回整个$_GET数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_get('username');//获取$_GET['username']
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">4. $this->controller->get_ip() Request-获取IP信息<a name="$this->controller->get_ip"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>Request-获取IP信息。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	echo $this->controller->get_ip();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">5. $this->controller->get_php_self() Request-获取PHP_SELF信息<a name="$this->controller->get_php_self"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-获取PHP_SELF信息。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_php_self();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">6. $this->controller->get_post($name = '') Request-获取POST信息<a name="$this->controller->get_post"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取post数组，不为空则获取单个POST。获取POST和GET数据，尽量走get_gp函数，这个函数没有字符串过滤，安全性不高。在Controller中使用</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_POST值，如果为空返回整个$_POST数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_post('username');//获取$_POST['username']
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">7. $this->controller->get_request_time() Request-获取REQUEST TIME信息<a name="$this->controller->get_request_time"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-获取REQUEST TIME信息。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_request_time();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">8. $this->controller->get_service_name() Request-获取SERVICENAME信息<a name="$this->controller->get_service_name"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>Request-获取SERVICENAME信息。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_service_name();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">9. $this->controller->get_service($name = '') Request-获取SERVICE信息<a name="$this->controller->get_service"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取SERVICE数组，不为空则获取单个SERVICE。在Controller中使用</p>
+<div class="title">
+  <h3>接口参数：</h3>
+</div>
+<table cellspacing="1" cellpadding="5" style="">
+  <tr >
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_SERVICE值，如果为空返回整个$_SERVICE数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_service();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">10. $this->controller->get_session($name = '') Request-获取SESSION信息<a name="$this->controller->get_session"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>如果$name为空则获取SESSION数组，不为空则获取单个SESSION。在Controller中使用</p>
+<div class="title">
+  <h3>接口参数：</h3>
+</div>
+<table cellspacing="1" cellpadding="5" style="">
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_SESSION值，如果为空返回整个$_SESSION数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$username = $this->controller->get_session('username');
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">11. $this->controller->get_uri() Request-获取URI信息<a name="$this->controller->get_uri"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-获取URI信息。在Controller中使用</p>
+<div class="title">
+  <h3>接口参数：</h3>
+</div>
+<table cellspacing="1" cellpadding="5" style="">
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$name</td>
+    <td>String </td>
+    <td>否</td>
+    <td>$_SESSION值，如果为空返回整个$_SESSION数组</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_uri();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">12. $this->controller->get_useragent() Request-获取useragent信息<a name="$this->controller->get_useragent"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-获取useragent信息。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->get_useragent();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">13. $this->controller->is_ajax() Request-判断是否是ajax提交方式<a name="$this->controller->is_ajax"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-判断是否是ajax提交方式。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->is_ajax();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">14. $this->controller->is_get() Request-判断是否是GET提交方式<a name="$this->controller->is_get"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-判断是否是GET提交方式。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->is_get();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="title">15. $this->controller->is_post() Request-判断是否是POST提交方式<a name="$this->controller->is_post"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p> Request-判断是否是POST提交方式。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+public function run() {
+	$this->controller->is_post();
+	$this->view->display(); //模板显示
+}
+</pre>
+<div class="nav"></div>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>
