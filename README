@@ -1,6 +1,0 @@
-1. 新增sign生成方法,用于接口间的数据签名
-2. 优化异常模式
-3. 优化debug var_dump方法展现方式
-4. 优化image图片类
-5. 优化curl类
-6. 修复log工具类的日志写入文件夹目录问题,在配置项中新增log日志全局配置$InitPHP_conf['log_dir']
