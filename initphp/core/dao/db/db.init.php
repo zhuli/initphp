@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架  Dao-db 常用SQL方法封装
+ * InitPHP 3.8 国产PHP开发框架   Dao-db 常用SQL方法封装
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -24,14 +24,17 @@ class dbInit extends sqlbuildInit {
 		if($InitPHP_conf['is_debug']==true) $end   =   microtime();
 		//sql query debug		
 		if($InitPHP_conf['is_debug']==true){
-			$k=count($InitPHP_conf['sqlcontrolarr']);
+			$k= isset($InitPHP_conf['sqlcontrolarr']) ? count($InitPHP_conf['sqlcontrolarr']) : 0;
 			$InitPHP_conf['sqlcontrolarr'][$k]['sql']=$sql;
 			$costTime=substr(($end-$start),0,7);
 			$InitPHP_conf['sqlcontrolarr'][$k]['queryTime']=$costTime;
 			$InitPHP_conf['sqlcontrolarr'][$k]['affectedRows']=$this->affected_rows();
-			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);	
+			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);
 		}
-		if ($this->db->error()) InitPHP::initError($this->db->error());
+        if ($this->db->error()) {
+            InitLog::logSql($this->db->error());
+            InitPHP::initError($this->db->error());
+        }
 		if ($is_set_default) $this->set_default_link_id(); //设置默认的link_id
 		return $query;
 	}

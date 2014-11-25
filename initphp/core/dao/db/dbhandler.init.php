@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架  Dao-ddb 多库-主从-分表解决方案
+ * InitPHP 3.8 国产PHP开发框架   Dao-ddb 多库-主从-分表解决方案
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -63,7 +63,7 @@ class dbhandlerInit {
 	protected function get_link_id($sql) {
 		$InitPHP_conf = InitPHP::getConfig();
 		$db_type = $InitPHP_conf['db'][$this->dbModel]['db_type'];
-		if ($InitPHP_conf['issqlcontrol'] == 1) {
+		if (isset($InitPHP_conf['issqlcontrol']) && $InitPHP_conf['issqlcontrol'] == 1) {
 			$InitPHP_conf['sqlcontrolarr'][] = $sql;
 			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);	
 		}

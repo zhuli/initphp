@@ -41,6 +41,12 @@
   <li><a href="#InitPHP::getService">InitPHP::getService</a></li>
   <li><a href="#InitPHP::getController">InitPHP::getController</a></li>
    <li><a href="#InitPHP::cli_init">InitPHP::cli_init</a></li>
+   <li><a href="#InitPHP::getLibrarys">InitPHP::getLibrarys</a></li>
+   <li><a href="#InitPHP::getUtils">InitPHP::getUtils</a></li>
+   <li><a href="#InitPHP::rpc_init">InitPHP::rpc_init()</a></li>
+   <li><a href="#InitPHP::getRemoteService">InitPHP::getRemoteService()</a></li>
+   <li><a href="#InitPHP::log">InitPHP::log()</a></li>
+   <li><a href="#InitPHP::registerAutoloader">InitPHP::registerAutoloader()</a></li>
 </ul>
 <div class="nav"></div>
 <div class="title">1. InitPHP::acl($config = array()) 权限控制函数<a name="InitPHP::acl"></a></div>
@@ -904,6 +910,243 @@ header("Content-Type:text/html; charset=utf-8");
 require_once('../../../initphp/initphp.php'); //导入配置文件-必须载入
 require_once(APP_PATH . 'conf/comm.conf.php'); //公用配置
 InitPHP::cli_init($argv); //框架初始化 
+</pre>
+<div class="nav"></div>
+
+
+<div class="title">24. InitPHP::getLibrarys($className) 调用框架扩展库类<a name="InitPHP::getLibrarys"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>可以直接调用框架扩展库类（框架的library中的类）。$className不需要填写扩展库的后缀名"Init"。</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$className </td>
+    <td>String </td>
+    <td>是</td>
+    <td>框架扩展库类名称，不带"Init"后缀</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+	public function run() {	
+		$curl = InitPHP::getLibrarys("curl"); //调用curl类
+		$curl->get("http://www.baidu.com"); //调用CURL	
+		$this->view->display("index/run");
+	}
+</pre>
+<div class="nav"></div>
+
+<div class="title">24. InitPHP::getUtils($className) 调用框架工具库类<a name="InitPHP::getUtils"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>可以直接调用框架工具库类（框架的util中的类）。$className不需要填写工具库的后缀名"Init"。</p>
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$className </td>
+    <td>String </td>
+    <td>是</td>
+    <td>框架工具库类名称，不带"Init"后缀</td>
+  </tr>
+</table>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+	public function run() {	
+		$queue = InitPHP::getUtils("queue");
+		$queue->set("100");
+		$queue->set("200");
+		$queue->set("300");
+		echo $queue->get();
+		echo $queue->get();
+		$this->view->display("index/run");
+	}
+</pre>
+<div class="nav"></div>
+
+<div class="title">25. InitPHP::rpc_init() 启动RPC服务<a name="InitPHP::rpc_init"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>启动RPC服务。如果你的业务需要对外提供你的Service层的RPC调用服务，则需要调用这个方法，初始化RPC服务。</p>
+<p>具体参见 RPC调用 这一章节</p>
+
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+define("APP_PATH", "../app/"); 
+header("Content-Type:text/html; charset=utf-8");   
+require_once('../../initphp/initphp.php'); //导入配置文件-必须载入
+require_once(APP_PATH . 'conf/comm.conf.php'); //公用配置
+InitPHP::rpc_init(); //提供RPC服务
+</pre>
+<div class="nav"></div>
+
+<div class="title">26. InitPHP::getRemoteService() RPC调用远程的Service<a name="InitPHP::getRemoteService"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>InitPHP提供的RPC调用服务是基于HTTP的，所以getRemoteService方法是通过CURL去调用</p>
+<p></p>
+<p>具体参见 RPC调用 这一章节</p>
+
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$class </td>
+    <td>String </td>
+    <td>是</td>
+    <td>Service的类名称，不带后缀(“Service”)</td>
+  </tr>
+  <tr>
+    <td>$method </td>
+    <td>String </td>
+    <td>是</td>
+    <td>方法名称</td>
+  </tr>
+  <tr>
+    <td>$args </td>
+    <td>Array </td>
+    <td>是</td>
+    <td>参数数组，如果不需要传递参数，则传递空数组</td>
+  </tr>
+   <tr>
+    <td>$group </td>
+    <td>String </td>
+    <td>否</td>
+    <td>业务分组名称，默认default。</td>
+  </tr>
+  <tr>
+    <td>$path </td>
+    <td>String </td>
+    <td>否</td>
+    <td>Service文件夹路径，如果没有则为空。</td>
+  </tr>
+  <tr>
+    <td>$timeout </td>
+    <td>String </td>
+    <td>否</td>
+    <td>RPC调用超时时间，默认5秒。</td>
+  </tr>
+</table>
+
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+try {
+	//调用RPC服务。调用userService中的getUserInfo方法，参数是：array("我是神TEST", "10")
+	//具体参见InitPHP::getRemoteService
+	$ret = InitPHP::getRemoteService("user", "getUserInfo", array("我是神TEST", "10"));
+	print_r($ret);
+} catch (exceptionInit $e) {
+	//服务调用异常
+	echo "Exection:[" . $e->getCode(). "]".$e->getMessage();
+} catch (Exception $e) {
+	//业务异常
+	echo "Exection:[" . $e->getCode(). "]".$e->getMessage();
+}
+</pre>
+<div class="nav"></div>
+
+<div class="title">27. InitPHP::log() 记录日志<a name="InitPHP::log"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>记录日志信息。</p>
+
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$message </td>
+    <td>String </td>
+    <td>是</td>
+    <td>错误信息</td>
+  </tr>
+  <tr>
+    <td>$log_type </td>
+    <td>String </td>
+    <td>否</td>
+    <td>日志类型   ERROR  WARN  DEBUG  IN</td>
+  </tr>
+</table>
+
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+InitPHP::log("Controller is not found", ERROR);
+</pre>
+<div class="nav"></div>
+
+<div class="title">28. InitPHP::registerAutoloader() 注册全局变量<a name="InitPHP::registerAutoloader"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>注册全局变量。</p>
+
+<div class="title">
+  <h3>参数：</h3>
+</div>
+<table>
+  <tr>
+    <th style="width:20%;"> 参数 </th>
+    <th style="width:20%;"> 类型 </th>
+    <th style="width:10%;"> 是否必须 </th>
+    <th style="width:50%;"> 描述 </th>
+  </tr>
+  <tr>
+    <td>$callback </td>
+    <td>String </td>
+    <td>是</td>
+    <td>回调方法</td>
+  </tr>
+</table>
+
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+InitPHP::registerAutoloader("test");
 </pre>
 <div class="nav"></div>
 

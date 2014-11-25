@@ -1,44 +1,50 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架  框架入口文件 核心框架文件
+ * InitPHP 3.8 国产PHP开发框架   框架入口文件 核心框架文件
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
- * Author:zhuli Dtime:2014-9-3
-***********************************************************************************/
+ * Author:zhuli Dtime:2014-11-25
+ ***********************************************************************************/
 require_once('initphp.conf.php'); //导入框架配置类
 require_once('init/core.init.php'); //导入核心类文件
 require_once('init/exception.init.php'); //导入核心类文件
 require_once('init/interceptorInterface.init.php'); //导入拦截器接口
+define("ERROR", "ERROR");
+define("WARN", "WARN");
+define("DEBUG", "DEBUG");
+define("INFO", "INFO");
 class InitPHP extends coreInit {
 
 	public static $time;
 
 	/**
-	 * 【静态】运行InitPHP开发框架 - 框架运行核心函数
+	 * 运行InitPHP开发框架 - 框架运行核心函
 	 * 1. 在index.php中实例化InitPHP启动类 InitPHP::init();
 	 * 2. 初始化网站路由，运行框架
 	 * 3. 全局使用方法：InitPHP::init(); 
 	 * @return object
 	 */
-	public static function init() { 
+	public static function init() {
 		try {
 			require(INITPHP_PATH . '/init/dispatcher.init.php');
-			require(INITPHP_PATH . '/init/run.init.php'); 
+			require(INITPHP_PATH . '/init/run.init.php');
 			require(INITPHP_PATH . '/init/interceptor.init.php'); //拦截器
 			$dispacher = InitPHP::loadclass('dispatcherInit');
 			$dispacher->dispatcher();
 			$run = InitPHP::loadclass('runInit');
 			$run->run();
 		} catch (exceptionInit $e) {
-			$e->errorMessage();
+			exceptionInit::errorTpl($e);
+		} catch (Exception $e) {
+			exceptionInit::errorTpl($e);
 		}
 	}
-	
+
 	/**
-	 * 【静态】命令行模式运行php
-	 * 1. 例如：/usr/lib/php /usr/local/web/www/index.php index test sql
+	 * 命令行模式运行php
+	 * 1. 例如：/usr/lib/php /usr/local/web/www/index.php index test sq
 	 * 2. index 控制器名称 test Action名称 sql controller/文件夹下的文件名称
 	 * 3. 全局使用方法：InitPHP::cli_init(); 
 	 * @return object
@@ -51,14 +57,125 @@ class InitPHP extends coreInit {
 			$argv[3] = ($argv[3] == '') ? '' : trim($argv[3]);
 			InitPHP::getController($argv[1], $argv[2], $params = array(), $argv[3]);
 		} catch (exceptionInit $e) {
-			$e->errorMessage();
+			exceptionInit::cliErrorTpl($e);
+		} catch (Exception $e) {
+			exceptionInit::cliErrorTpl($e);
 		}
 	}
 
 	/**
-	 * 【静态】框架加载文件函数 - 核心加载文件
+	 * 启动RPC服务
+	 * 1. 最好只支持内网服务器之间的服务调用
+	 * 2. 开启RPC调用后，不同的程序可以直接调用Service的方法。
+	 * 3. 返回code=405  ：调用失败，调用失败原因和调用的方式有关系
+	 * 4. 返回code=200 : 调用成功，返回业务结果
+	 * 5. 返回code=500 : 业务层面抛出异常
+	 *
+	 */
+	public static function rpc_init() {
+		$ret = array();
+		$params = json_decode(urldecode($_POST['params']), true);
+		if (!is_array($params) || !$params['class'] || !$params['method']) {
+			return InitPHP::rpc_ret(405, "params is error");
+		}
+		$class = $params['class']; //类名称
+		$method = $params['method']; //方法名称
+		$path = $params['path']; //方法名称
+		$args = $params['args'];  //参数数组
+		//判断是否允许访问
+		$InitPHP_conf = InitPHP::getConfig();
+		$fullClass = ($path != "") ? rtrim($path, '/') . '/' . $class : $class;
+		if (!isset($InitPHP_conf['provider']['allow']) || !in_array($fullClass, $InitPHP_conf['provider']['allow'])) {
+			return InitPHP::rpc_ret(405, "This class is not allow to access");
+		}
+		//判断IP地址
+		$requestClassPath = INITPHP_PATH . "/core/controller/request.init.php";
+		require($requestClassPath);
+		$request = new requestInit();
+		$ip = $request->get_ip();
+		$isAllowIp = true;
+		if (isset($InitPHP_conf['provider']['allow_ip']) && is_array($InitPHP_conf['provider']['allow_ip'])) {
+			foreach ($InitPHP_conf['provider']['allow_ip'] as $v) {
+				$pos = strpos($v, '*'); //如果查找到*，则可以匹配一个ip段
+				if ($pos) {
+					$vArr = explode(".", $v);
+					$uArr = explode(".", $ip);
+					$check = true;
+					foreach ($vArr as $k => $p) {
+						if ($p == "*") {
+							continue;
+						} else {
+							if ($p != $uArr[$k]) {
+								$check = false;
+								break;
+							}
+						}
+					}
+					if ($check == true) {
+						$isAllowIp = true;
+						break;
+					} else {
+						$isAllowIp = false;
+					}
+				} else {
+					if ($ip == $v) {
+						$isAllowIp = true;
+						break;
+					} else {
+						$isAllowIp = false;
+					}
+				}
+			}
+		}
+		if ($isAllowIp == false) {
+			return InitPHP::rpc_ret(405, "This ip address is not allow to access");
+		}
+		//判断类是否存在
+		$obj = InitPHP::getService($class);
+		if (!$obj) {
+			return InitPHP::rpc_ret(405, "can not find this class");
+		}
+		//调用方法
+		$InitPHP_conf = InitPHP::getConfig();
+		$classFullName = $class . $InitPHP_conf['service']['service_postfix'];
+		if (!method_exists($obj, $method)) {
+			return InitPHP::rpc_ret(405, "can not find this method");
+		}
+		$method = new ReflectionMethod($classFullName, $method);
+		if (!$method || !$method->isPublic()) {
+			return InitPHP::rpc_ret(405, "can not find this method");
+		}
+		try {
+			if ($args == "" || !is_array($args)) {
+				$result = $method->invoke($obj);
+			} else {
+				$result = $method->invokeArgs($obj, $args); //有参数的调用方式
+			}
+			return InitPHP::rpc_ret(200, "SUCCESS", $result);
+		} catch (Exception  $e) {
+			return InitPHP::rpc_ret(500, "Exception", $e->getMessage());
+		}
+	}
+
+	/**
+	 * RPC 返回结果
+	 * @param $code 错误码
+	 * @param $msg	错误信息
+	 * @param $data 错误内容
+	 */
+	public static function rpc_ret($code, $msg, $data = null) {
+		$ret = array();
+		$ret['code'] = $code;
+		$ret['msg'] = $msg;
+		$ret['data'] = $data;
+		exit(json_encode($ret));
+	}
+
+	/**
+	 * 框架加载文件函数 - 核心加载文
 	 * 1. 自定义文件路径，加载文件
 	 * 2. 自定义文件路径数组，自动查询，找到文件返回TRUE，找不到返回false
+	 * 3. 只需要文件名，import会自动加上APP_PATH
 	 * 全局使用方法：InitPHP::import($filename, $pathArr);
 	 * @param $filename 文件名称
 	 * @param $pathArr  文件路径
@@ -89,10 +206,10 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】框架实例化php类函数，单例模式
-	 * 1. 单例模式-单例 实例化一个类
+	 * 框架实例化php类函数，单例模式
+	 * 1. 单例模式-单例 实例化一个
 	 * 2. 可强制重新实例化
-	 * 全局使用方法：InitPHP::loadclass($classname, $force = false);
+	 * 全局使用方法：InitPHP::loadclass($classname, $force = false)
 	 * @param string $classname
 	 * @return object
 	 */
@@ -108,7 +225,19 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】框架hook插件机制
+	 * 注册全局变量
+	 * 全局使用方法：InitPHP::registerAutoloader($callback)
+	 * @param string $callback
+	 * @return object
+	 */
+	public static function registerAutoloader($callback){
+		spl_autoload_unregister(array('InitPHP', 'autoloader'));
+		spl_autoload_register($callback);
+		spl_autoload_register(array('InitPHP', 'autoloader'));
+	}
+
+	/**
+	 * 框架hook插件机制
 	 * 1. 采用钩子挂载机制，一个钩子上可以挂载多个执行
 	 * 2. hook机制需要配置框架配置文件运行
 	 * 全局使用方法：InitPHP::hook($hookname, $data = '');
@@ -134,7 +263,7 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 *	【静态】框架hook插件机制-私有
+	 *	框架hook插件机制-私有
 	 *  @param  string $class  钩子的类名
 	 *  @param  array  $function  钩子方法名称
 	 *  @param  string $data 传递的参数
@@ -158,7 +287,7 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】XSS过滤，输出内容过滤
+	 * XSS过滤，输出内容过滤
 	 * 1. 框架支持全局XSS过滤机制-全局开启将消耗PHP运行
 	 * 2. 手动添加XSS过滤函数，在模板页面中直接调用
 	 * 全局使用方法：InitPHP::output($string, $type = 'encode');
@@ -180,7 +309,7 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】获取Service-实例并且单例模式获取Service
+	 * 获取Service-实例并且单例模式获取Service
 	 * 1.单例模式获取
 	 * 2.可以选定对应Service路径path
 	 * 3. service需要在配置文件中配置参数，$path对应service目录中的子目录
@@ -199,7 +328,109 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】获取Dao-实例并且单例模式获取Dao
+	 * 静态方式调用扩展库中的类
+	 * 单例模式，和$this->getLibrary方法是一样的
+	 * 全局使用方法：InitPHP::getLibrarys("curl")
+	 * @param $className 例如调用curlInit类，则$className = curl，不需要后缀 Init
+	 * @return object
+	 */
+	public static function getLibrarys($className) {
+		$classPath = INITPHP_PATH . "/library/" . $className . '.init.php';
+		$classFullName = $className . "Init";
+		if (!file_exists($classPath)) InitPHP::initError('file '. $class_name . '.php is not exist!');
+		if (!isset(parent::$instance['initphp']['l'][$classFullName])) {
+			require_once($classPath);
+			if (!class_exists($classFullName)) InitPHP::initError('class' . $classFullName . ' is not exist!');
+			$initClass = new $classFullName;
+			parent::$instance['initphp']['l'][$classFullName] = $initClass;
+		}
+		return parent::$instance['initphp']['l'][$classFullName];
+	}
+
+	/**
+	 * 静态方式调用工具库中的类
+	 * 单例模式，和$this->getUtil方法是一样的
+	 * 全局使用方法：InitPHP::getUtils("queue")
+	 * @param $className 例如调用queueInit类，则$className = queue，不需要后缀 Init
+	 * @return object
+	 */
+	public static function getUtils($className) {
+		$classPath = INITPHP_PATH . "/core/util/" . $className . '.init.php';
+		$classFullName = $className . "Init";
+		if (!file_exists($classPath)) InitPHP::initError('file '. $class_name . '.php is not exist!');
+		if (!isset(parent::$instance['initphp']['u'][$classFullName])) {
+			require_once($classPath);
+			if (!class_exists($classFullName)) InitPHP::initError('class' . $classFullName . ' is not exist!');
+			$initClass = new $classFullName;
+			parent::$instance['initphp']['u'][$classFullName] = $initClass;
+		}
+		return parent::$instance['initphp']['u'][$classFullName];
+	}
+
+	/**
+	 * 通过工具库中的日志类来记录日志
+	 * 全局使用方法：InitPHP::log("queue")
+	 * @param  string  $message  日志信息
+	 * @param  string  $log_type 日志类型   ERROR  WARN  DEBUG  IN
+	 */
+	public static function log($message, $log_type = 'DEBUG') {
+		$log = InitPHP::getUtils("log"); //获取logInit对象实例
+		$log->write($message, $log_type);
+	}
+
+	/**
+	 * 调用远程内网Service服务
+	 * 1. 如果调用成功，则返回结果
+	 * 2. 如果业务层异常，则抛出 Exception 异常信息，需要外部捕获处理
+	 * 3. 调用服务异常，则抛出 exceptionInit 异常信息，需要外部捕获处理
+	 * @param $class 类名称，例如userService，则user
+	 * @param $method 方法名称，例如 getUse
+	 * @param $args 参数，按照参数排序
+	 * @param $group 参数，分组参数
+	 * @param $path Service的路径
+	 * @param $timeout 最长请求时间
+	 */
+	public static function getRemoteService($class, $method, $args = array(), $group = "default",  $path = "", $timeout = 5) {
+		$InitPHP_conf = InitPHP::getConfig();
+		if (!isset($InitPHP_conf['customer']) || !isset($InitPHP_conf['customer'][$group])) {
+			throw new exceptionInit("Please check your config:InitPHP_conf['customer']!", 405);
+		}
+		$i = rand(0,(count($InitPHP_conf['customer'][$group]['host']) - 1));
+		$host = $InitPHP_conf['customer'][$group]['host'][$i];
+		$file = $InitPHP_conf['customer'][$group]['file'];
+		$url = "http://" . $host ."/" . ltrim($file, "/");
+		$classPath = INITPHP_PATH . "/library/curl.init.php";
+		require_once($classPath);
+		$curl = new curlInit();
+		$temp = array(
+			"class" => $class,
+			"method" => $method,
+			"args" => $args,
+			"path" => $path
+		);
+		$params = urlencode(json_encode($temp));
+		try {
+			$json = $curl->post($url, array("params" => $params), null, $timeout);
+		} catch (Exception $e) {
+			throw new exceptionInit("Curl call fail!", 405);
+		}
+		$ret = json_decode($json, true);
+		//服务层调用失败，抛出exceptionInit异常
+		if (!ret) {
+			throw new exceptionInit("Rpc call fail!", 405);
+		}
+		if ($ret["code"] == 405) {
+			throw new exceptionInit($ret['msg'], 405);
+		}
+		//业务层抛出异常
+		if ($ret['code'] == 500) {
+			throw new Exception($ret['data'], 500);
+		}
+		return $ret['data'];
+	}
+
+	/**
+	 * 获取Dao-实例并且单例模式获取Dao
 	 * 1.单例模式获取
 	 * 2.可以选定Dao路径path
 	 * 3. dao需要在配置文件中配置参数，$path对应dao目录中的子目录
@@ -219,12 +450,12 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】组装URL
+	 * 组装URL
 	 * default：index.php?m=user&c=index&a=run
- 	 * rewrite：/user/index/run/?id=100
- 	 * path: /user/index/run/id/100
+	 * rewrite：/user/index/run/?id=100
+	 * path: /user/index/run/id/100
 	 * html: user-index-run.htm?uid=100
- 	 * 全局使用方法：InitPHP::url('user|delete', array('id' => 100))
+	 * 全局使用方法：InitPHP::url('user|delete', array('id' => 100))
 	 * @param String $action  m,c,a参数，一般写成 cms|user|add 这样的m|c|a结构
 	 * @param array  $params  URL中其它参数
 	 * @param String $baseUrl 是否有默认URL，如果有，则
@@ -244,7 +475,7 @@ class InitPHP extends coreInit {
 				}
 				return $baseUrl . $actionStr . $paramsStr;
 				break;
-			
+					
 			case 'path' :
 				$actionStr = implode('/', $action);
 				$paramsStr = '';
@@ -256,7 +487,7 @@ class InitPHP extends coreInit {
 				}
 				return $baseUrl . $actionStr . $paramsStr;
 				break;
-				
+
 			case 'html' :
 				$actionStr = implode('-', $action);
 				$actionStr = $actionStr . '.htm';
@@ -266,7 +497,7 @@ class InitPHP extends coreInit {
 				}
 				return $baseUrl . $actionStr . $paramsStr;
 				break;
-			
+					
 			default:
 				$actionStr = '';
 				if ($ismodule === true) {
@@ -276,7 +507,7 @@ class InitPHP extends coreInit {
 				} else {
 					$actionStr .= 'c=' . $action[0];
 					$actionStr .= '&a=' . $action[1] . '&';
-				} 
+				}
 				$actionStr = '?' . $actionStr;
 				$paramsStr = '';
 				if ($params) {
@@ -288,7 +519,7 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】获取时间戳
+	 * 获取时间戳
 	 * 1. 静态时间戳函数
 	 * 全局使用方法：InitPHP::getTime();
 	 * @param $msg
@@ -326,18 +557,19 @@ class InitPHP extends coreInit {
 		$a = ($_GET['a']) ? $_GET['a'] : $InitPHP_conf['controller']['default_action'];
 		if ($InitPHP_conf['ismodule']) {
 			$m = $_GET['m'];
-			if (isset($config[$m]) && isset($config[$m][$c]) && in_array($a, $config[$c]))
+			if (isset($config[$m]) && isset($config[$m][$c]) && in_array($a, $config[$c])) {
 				return true;
+			}
 			return false;
 		} else {
 			if (isset($config[$c]) && in_array($a, $config[$c]))
-				return true;
+			return true;
 			return false;
 		}
 	}
 
 	/**
-	 * 【静态】获取全局配置文件
+	 * 获取全局配置文件
 	 * 全局使用方法：InitPHP::getConfig()
 	 * @param $msg
 	 * @return Array
@@ -346,7 +578,7 @@ class InitPHP extends coreInit {
 		global $InitPHP_conf;
 		return $InitPHP_conf;
 	}
-	
+
 	/**
 	 * 设置配置文件，框架意外慎用！
 	 * @param $key
@@ -357,9 +589,9 @@ class InitPHP extends coreInit {
 		$InitPHP_conf[$key] = $value;
 		return $InitPHP_conf;
 	}
-	
+
 	/**
-	 * 【静态】获取项目路径
+	 * 获取项目路径
 	 * 全局使用方法：InitPHP::getAppPath('data/file.php')
 	 * @param $path
 	 * @return String
@@ -370,7 +602,7 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 【静态】框架错误机制
+	 * 框架错误机制
 	 * 1. 框架的错误信息输出函数，尽量不要使用在项目中
 	 * 全局使用方法：InitPHP::initError($msg)
 	 * @param $msg
@@ -379,9 +611,9 @@ class InitPHP extends coreInit {
 	public static function initError($msg, $code = 10000) {
 		throw new exceptionInit($msg, $code);
 	}
-	
+
 	/**
-	 * 【静态】调用其它Controller中的方法
+	 * 调用其它Controller中的方法
 	 * 1. 一般不建议采用Controller调用另外一个Controller中的方法
 	 * 2. 该函数可以用于接口聚集，将各种接口聚集到一个接口中使用
 	 * 全局使用方法：InitPHP::getController($controllerName, $functionName)
@@ -389,7 +621,7 @@ class InitPHP extends coreInit {
 	 * @param $functionName   方法名称
 	 * @param $params         方法参数
 	 * @param $controllerPath 控制器文件夹名称,例如在控制器文件夹目录中，还有一层目录，user/则，该参数需要填写
-	 * @return 
+	 * @return
 	 */
 	public function getController($controllerName, $functionName, $params = array(), $controllerPath = '') {
 		$InitPHP_conf = InitPHP::getConfig();
@@ -397,15 +629,65 @@ class InitPHP extends coreInit {
 		$path = rtrim($InitPHP_conf['controller']['path'], '/') . '/' . $controllerPath . $controllerName . '.php';
 		InitPHP::import($path);
 		$controller = InitPHP::loadclass($controllerName);
-		if (!$controller) 
-			return InitPHP::initError('can not loadclass : ' . $controllerName);
-		if (!method_exists($controller, $functionName)) 
-			return InitPHP::initError('function is not exists : ' . $controllerName);
+		if (!$controller)
+		return InitPHP::initError('can not loadclass : ' . $controllerName);
+		if (!method_exists($controller, $functionName))
+		return InitPHP::initError('function is not exists : ' . $controllerName);
 		if (!$params) {
 			$controller->$functionName();
 		} else {
-			call_user_func_array(array($controller, $functionName), $params); 
+			call_user_func_array(array($controller, $functionName), $params);
 		}
+	}
+	
+	/**
+	 * 返回404错误页面
+	 */
+	public static function return404() {
+		header('HTTP/1.1 404 Not Found');
+		header("status: 404 Not Found");
+		self::_error_page("404 Not Found");
+		exit;
+	}
+	
+	/**
+	 * 返回405错误页面
+	 */
+	public static function return405() {
+		header('HTTP/1.1 405 Method not allowed');
+		header("status: 405 Method not allowed");
+		self::_error_page("405 Method not allowed");
+		exit;
+	}
+
+	/**
+	 * 返回500错误页面
+	 */
+	public static function return500() {
+		header('HTTP/1.1 500 Internal Server Error');
+		header("status: 500 Internal Server Error");
+		self::_error_page("500 Internal Server Error");
+		exit;
+	}
+
+	private static function _error_page($msg) {
+		$html = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">
+		<html>
+		<head><title>".$msg."</title></head>
+		<body bgcolor=\"white\">
+		<h1>".$msg."</h1>
+		<p>The requested URL was ".$msg." on this server. Sorry for the inconvenience.<br/>
+		Please report this message and include the following information to us.<br/>
+		Thank you very much!</p>
+		<table>
+		<tr>
+		<td>Date:</td>
+		<td>".date("Y-m-d H:i:s")."</td>
+		</tr>
+		</table>
+		<hr/>Powered by InitPHP/3.8</body>
+		</html>";
+		echo $html;
 	}
 
 }
@@ -414,7 +696,7 @@ class InitPHP extends coreInit {
  * 控制器Controller基类
  * 1. 每个控制器都需要继承这个基类
  * 2. 通过继承这个基类，就可以直接调用框架中的方法
- * 3. 控制器中可以直接调用$this->contorller 和 $this->view
+ * 3. 控制器中可以直接调用$this->contorller 和 $this->vie
  * @author zhuli
  */
 class Controller extends coreInit {
@@ -440,7 +722,7 @@ class Controller extends coreInit {
 		$this->view->set_template_config($InitPHP_conf['template']); //设置模板
 		$this->view->assign('init_token', $this->controller->get_token()); //全局输出init_token标记
 		//注册全局变量，这样在Service和Dao中通过$this->common也能调用Controller中的类
-		$this->register_global('common', $this->controller); 
+		$this->register_global('common', $this->controller);
 	}
 }
 

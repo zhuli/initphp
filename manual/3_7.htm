@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - RPC调用</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第3章 3.7 RPC调用</div>
+    <div class="header_right"><a href="3_6.htm">上一页</a> <a href="4_1.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">关于RPC调用：</div>
+<ul>
+  <li>当网站业务比较庞大的时候，会将业务进行拆分，例如User（用户）和Order（订单）拆分成两块不同的业务。
+  这两块业务都是不同的服务器集群。这个时候Order中需要用到User的信息的时候就需要使用内网（内网网络速度快）的RPC调用，
+  例如Order下订单的时候需要调用一个通过UID获取用户信息的Service方法。</li>
+  <li>InitPHP的RPC是基于HTTP协议的。</li>
+  <li>InitPHP的RPC功能，可以支持不同的业务模块之间能方便的通过HTTP协议调用Service中的方法。</li>
+  <li>通过简单的配置，即可以是服务提供方，也可以是服务的使用方。</li>
+</ul>
+<div class="title">服务提供方：</div>
+<ul>
+  <li>服务提供方是指我可以提供Service的RPC服务给其它业务调用，例如User业务。</li>
+  <li>$InitPHP_conf['provider']['allow']可以配置我哪些Service可以对外访问，例如我提供了userService可以
+  对外被调用，则需要配置在这个数组中。</li>
+  <li>$InitPHP_conf['provider']['allow_ip']主要用于限制哪些IP可以调用Service。一般情况下建议开启
+  RPC之后，限制在只允许内网服务器之间调用</li>
+  <li>需要创建一个可以对内网访问的入口文件，具体配置不详细讲解。例如我在www目录下创建一个rpc.php文件。有这个入口文件，别人才能调用。</li>
+</ul>
+配置：
+<pre id="PHP" class="prettyprint">
+/*********************************RPC服务*****************************************/
+/**
+ * RPC配置
+ * RPC分两种，服务提供者-provider和服务使用者-customer
+ */
+$InitPHP_conf['provider']['allow'] = array(
+	"user"
+); //允许访问的Service,例如userService,则是user。如果带path，则xxx/user
+$InitPHP_conf['provider']['allow_ip'] = array(
+	"127.0.0.2", "192.168.*.*", "127.0.0.*"
+); //允许内部调用的IP地址,如果需要填写ip段，则可以通过 192.168.*.*，使用*来匹配
+</pre>
+
+rpc.php
+<pre id="PHP" class="prettyprint">
+define("APP_PATH", "../app/"); 
+header("Content-Type:text/html; charset=utf-8");   
+require_once('../../initphp/initphp.php'); //导入配置文件-必须载入
+require_once(APP_PATH . 'conf/comm.conf.php'); //公用配置
+InitPHP::rpc_init(); //提供RPC服务
+</pre>
+
+userService
+<pre id="PHP" class="prettyprint">
+class userService extends Service {
+
+	/**
+	 * @var userDao
+	 */
+	private $userDao;
+
+	public function getUser() {
+		return "initphp";
+	}
+
+	public function getUserInfo($username, $age) {
+		return "Username:" . $username . " age:" . $age;
+	}
+
+	/**
+	 * 创建一个用户
+	 */
+	public function createUser($user) {
+		$this->userDao = InitPHP::getDao("user");
+		return $this->userDao->addUser($user);
+	}
+
+}
+</pre>
+
+<div class="title">服务使用方：</div>
+<ul>
+  <li>服务使用方是指需要通过RPC调用其它业务的Service，例如Order订单需要调用User模块。</li>
+  <li>配置文件中，需要配置调用的服务例如User服务器访问的内网IP地址，以及访问的入口文件。</li>
+  <li>业务模块非常多的时候，可以进行分组功能。$InitPHP_conf['customer']的key值就是组的名称。不同的组
+  对应不同的业务模块。</li>
+</ul>
+
+配置：
+<pre id="PHP" class="prettyprint">
+$InitPHP_conf['customer'] = array(
+	"default" => array( //可以进行分组
+		"host" => array("127.0.0.1"), //服务提供者所在的服务器的IP地址，一般是内网IP地址。可以填写多台服务器
+		"file" => "/initphp_3.8/demo/www/rpc.php" //访问服务的入口文件，例如加上IP地址：http://localhost/rpc.php
+	)
+);
+</pre>
+
+使用：
+<pre id="PHP" class="prettyprint">
+try {
+	//调用RPC服务。调用userService中的getUserInfo方法，参数是：array("我是神TEST", "10")
+	//具体参见InitPHP::getRemoteService
+	$ret = InitPHP::getRemoteService("user", "getUserInfo", array("我是神TEST", "10"));
+	print_r($ret);
+} catch (exceptionInit $e) {
+	//服务调用异常
+	echo "Exection:[" . $e->getCode(). "]".$e->getMessage();
+} catch (Exception $e) {
+	//业务异常
+	echo "Exection:[" . $e->getCode(). "]".$e->getMessage();
+}
+</pre>
+
+结果输出：
+<pre id="PHP" class="prettyprint">
+Username:我是神TEST age:10 
+</pre>
+
+
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

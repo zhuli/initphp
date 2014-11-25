@@ -1,12 +1,12 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架 - 框架运行器，所有的框架运行都需要通过此控制器
+ * InitPHP 3.8 国产PHP开发框架  - 框架运行器，所有的框架运行都需要通过此控制器
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
- * Author:zhuli Dtime:2014-9-3
+ * Author:zhuli Dtime:2014-11-25
  ***********************************************************************************/
 class runInit {
 
@@ -26,7 +26,7 @@ class runInit {
 
 
 	/**
-	 * 【私有】框架运行核心函数
+	 * 框架运行核心函数
 	 * 1. 设置参数
 	 * 2. 获取controller
 	 * 3. 运行前置Action
@@ -36,6 +36,7 @@ class runInit {
 	 */
 	public function run() {
 		$InitPHP_conf = InitPHP::getConfig(); //全局配置
+		$this->init2Ehandle(); //收集错误信息，并记录
 		$this->filter();
 		$this->set_params($InitPHP_conf['controller']);
 		//验证方法是否合法，如果请求参数不正确，则直接返回404
@@ -52,15 +53,15 @@ class runInit {
 	}
 
 	/**
-	 * 【私有】验证请求是否合法
+	 * 验证请求是否合法
 	 * 1. 如果请求参数m,c,a都为空，则走默认的
 	 */
 	private function checkRequest() {
 		$InitPHP_conf = InitPHP::getConfig();
-		$controller  = $_GET['c'];
-		$action = $_GET['a'];
+		$controller  = isset($_GET['c']) ? $_GET['c'] : '';
+		$action = isset($_GET['a']) ? $_GET['a'] : '';
 		if ($InitPHP_conf['ismodule'] == true) {
-			$module  = $_GET['m'];
+			$module  = isset($_GET['m']) ? $_GET['m'] : '';
 			if ($module == "" && $controller == "" && $action == "") {
 				$module = $_GET['m'] = $this->default_module;
 				$controller = $_GET['c'] = $this->default_controller;
@@ -68,7 +69,7 @@ class runInit {
 			}
 			//如果module不在白名单中，则直接返回404
 			if (!in_array($module, $this->module_list) || empty($module)) {
-				return $this->return404();
+				return InitPHP::return404();
 			}
 			$module = $module . '/';
 		} else {
@@ -83,19 +84,19 @@ class runInit {
 		$controllerClass = $controller . $this->controller_postfix;
 		$controllerFilePath = $path . $module . $controllerClass . '.php';
 		if (!InitPHP::import($controllerFilePath)) {
-			return $this->return404();
+			return InitPHP::return404();
 		}
 		$controllerObj = InitPHP::loadclass($controllerClass);
 		//处理Action，如果方法不存在，则直接返回404
 		list($whiteList, $methodList) = $this->parseWhiteList($controllerObj->initphp_list);
 		if ($action != $this->default_action) {
 			if (!in_array($action, $whiteList)) {
-				return $this->return404(); //如果Action不在白名单中
+				return InitPHP::return404();//如果Action不在白名单中
 			} else {
 				if ($methodList[$action]) {
 					$method = strtolower($_SERVER['REQUEST_METHOD']);
 					if (!in_array($method, $methodList[$action])) { //检查提交的HTTP METHOD
-						return $this->return405(); //如果请求Method不正确，则返回405
+						return InitPHP::return405(); //如果请求Method不正确，则返回405
 					}
 				}
 			}
@@ -104,7 +105,7 @@ class runInit {
 	}
 
 	/**
-	 * 【私有】框架运行控制器中的Action函数
+	 * 框架运行控制器中的Action函数
 	 * 1. 获取Action中的a参数
 	 * 2. 检测是否在白名单中，不在则选择默认的
 	 * 3. 检测方法是否存在，不存在则运行默认的
@@ -149,7 +150,7 @@ class runInit {
 	}
 
 	/**
-	 * 【私有】REST方式访问
+	 * REST方式访问
 	 *  1. 控制器中需要定义 public $isRest变量
 	 *  2. 并且Action在rest数组列表中
 	 *  3. 程序就会走REST模式
@@ -178,7 +179,7 @@ class runInit {
 	}
 
 	/**
-	 * 【私有】运行框架前置类
+	 * 运行框架前置类
 	 * 1. 检测方法是否存在，不存在则运行默认的
 	 * 2. 运行函数
 	 * @param object $controller 控制器对象
@@ -191,7 +192,7 @@ class runInit {
 	}
 
 	/**
-	 * 【私有】运行框架后置类
+	 * 运行框架后置类
 	 * 1. 检测方法是否存在，不存在则运行默认的
 	 * 2. 运行函数
 	 * @param object $controller 控制器对象
@@ -204,7 +205,7 @@ class runInit {
 	}
 
 	/**
-	 *	【私有】设置框架运行参数
+	 *	设置框架运行参数
 	 *  @param  string  $params
 	 *  @return string
 	 */
@@ -228,7 +229,7 @@ class runInit {
 	}
 
 	/**
-	 *	【私有】m-c-a数据处理
+	 *	m-c-a数据处理
 	 *  @return string
 	 */
 	private function filter() {
@@ -247,43 +248,35 @@ class runInit {
 		return preg_match('/^[A-Za-z0-9_]+$/', trim($str));
 	}
 
-	/**
-	 * 返回404错误页面
-	 */
-	private function return404() {
-		header('HTTP/1.1 404 Not Found');
-		header("status: 404 Not Found");
-		$this->_error_page("404 Not Found");
-		exit;
+	/*
+	 * 初始化异常和错误处理函数
+	 * */
+	public function init2Ehandle(){
+		set_exception_handler(array($this,'handleException'));
+		set_error_handler(array($this,'handleError'),error_reporting());
 	}
 
-	/**
-	 * 返回405错误页面
+	/*
+	 *设置异常处理函数,写入日志文件
 	 */
-	private function return405() {
-		header('HTTP/1.1 405 Method not allowed');
-		header("status: 405 Method not allowed");
-		$this->_error_page("405 Method not allowed");
-		exit;
+	public function handleException($exception){
+		restore_exception_handler();
+		exceptionInit::errorTpl($exception);
 	}
-	
-	private function _error_page($msg) {
-		$html = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">
-		<html>
-		<head><title>".$msg."</title></head>
-		<body bgcolor=\"white\">
-		<h1>".$msg."</h1>
-		<p>The requested URL was ".$msg." on this server. Sorry for the inconvenience.<br/>
-		Please report this message and include the following information to us.<br/>
-		Thank you very much!</p>
-		<table>
-		<tr>
-		<td>Date:</td>
-		<td>".date("Y-m-d H:i:s")."</td>
-		</tr>
-		</table>
-		<hr/>Powered by InitPHP/3.6</body>
-		</html>";
-		echo $html;
+
+	/*
+	 *设置PHP错误处理回调函数,写入日志文件
+	 */
+	public function handleError($errorCode, $msg = '', $errorFile = 'unkwon', $errorLine = 0){
+		$InitPHP_conf = InitPHP::getConfig();
+		restore_error_handler();
+		if($errorCode & error_reporting()){
+			InitPHP::log("[error_code]:" . $errorCode . " [msg]:" . $msg, ERROR);
+		}
+		if($InitPHP_conf['is_debug'] == true) {
+			var_dump($msg);
+		} else {
+			return InitPHP::return500();
+		}
 	}
 }

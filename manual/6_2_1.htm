@@ -24,13 +24,16 @@
   <li><a href="#$this->controller->return404">$this->controller->return404</a></li>
   <li><a href="#$this->controller->return200">$this->controller->return200</a></li>
   <li><a href="#$this->controller->return500">$this->controller->return500</a></li>
+  <li><a href="#$this->controller->return403">$this->controller->return403</a></li>
+  <li><a href="#$this->controller->return405">$this->controller->return405</a></li>
 </ul>
 <div class="nav"></div>
 <div class="title">1. $this->controller->ajax_return($status, $message = '', $data = array(), $type = 'json') AJAX返回数据结构<a name="$this->controller->ajax_return"></a></div>
 <div class="title">
   <h3>接口描述：</h3>
 </div>
-<p>一般在AJAX提交后，通过这个函数返回Controller执行的数据结构。在Controller中使用</p>
+<p>一般在AJAX提交后，通过这个函数返回Controller执行的数据结构。在Controller中使用。
+如果是jsonp，则URL中需要带上callback参数</p>
 <div class="title">
   <h3>参数：</h3>
 </div>
@@ -63,7 +66,7 @@
     <td>$type</td>
     <td>String</td>
     <td>否</td>
-    <td>返回数据类型，json|xml|eval</td>
+    <td>返回数据类型，json|xml|eval|jsonp</td>
   </tr>
 </table>
 <div class="title">
@@ -273,6 +276,49 @@ class indexController extends Controller {
 	
 }
 </pre>
+
+<div class="nav"></div>
+<div class="title">8. $this->controller->return403() 返回http403<a name="$this->controller->return403"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>返回http403。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->controller->return403()
+	}
+	
+}
+</pre>
+
+<div class="nav"></div>
+<div class="title">9. $this->controller->return405() 返回http405<a name="$this->controller->return405"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>返回http405。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->controller->return405()
+	}
+	
+}
+</pre>
+
 <div class="nav"></div>
 <div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
 <script src="static/jquery.js" type="text/javascript"></script>

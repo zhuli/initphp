@@ -6,40 +6,68 @@ if (!defined('IS_INITPHP')) exit('Access Denied!');
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
- * Author:zhuli Dtime:2014-9-3
+ * Author:zhuli Dtime:2014-11-25
  * $Modify Author:SK(michaellee)
  * $Modify Time:2014-4-22
  ***********************************************************************************/
 class exceptionInit extends Exception{
-
+	
 	/**
-	 * show error message
+	 * 命令行运行，异常模板
 	 */
-	public function errorMessage() {
+	public static function cliErrorTpl($e) {
 		$InitPHP_conf = InitPHP::getConfig();
-		$msg = $this->message;
-		if (!$InitPHP_conf['is_debug'] && $this->code == 10000) {
+		$mainErrorCode = $e->getLineCode($e->getFile(), $e->getLine());
+		self::_recordError($msg,$e->getFile(),$e->getLine(),trim($mainErrorCode));
+		//如果debug关闭，则不显示debug错误信息
+		$trace = $e->getTrace();
+		$runTrace = $e->getTrace();
+		krsort($runTrace);
+		$traceMessageHtml = null;
+		$k = 1;
+		echo "PHP Trace:\r\n";
+		foreach ($runTrace as $v) {
+			echo "[file]:" . $v['file'] . " \r\n[line]:" . $v['line'] . " \r\n[code]:" . trim(self::getLineCode($v['file'], $v['line'])) . "\r\n\r\n";
+			$k++;
+		}
+		unset($k);unset($trace);unset($runTrace);unset($trace);
+		echo "SQL Trace:\r\n";
+		if (isset($InitPHP_conf['sqlcontrolarr']) && is_array($InitPHP_conf['sqlcontrolarr'])) {
+			foreach ($InitPHP_conf['sqlcontrolarr'] as $k => $v) {
+				echo "[Sql]:" . $v['sql'] . " \r\n[queryTime]:" . $v['queryTime'] . " \r\n[affectedRows]:" . $v['affectedRows'] . "\r\n\r\n";
+			}
+		}
+		exit;
+	}
+	
+	public static function errorTpl($e) {
+		$InitPHP_conf = InitPHP::getConfig();
+		$msg = $e->message;
+		$mainErrorCode = self::getLineCode($e->getFile(), $e->getLine());
+		self::_recordError($msg, $e->getFile(), $e->getLine(), trim($mainErrorCode));
+		if (!$InitPHP_conf['is_debug'] && $e->code == 10000) {
 			$msg = '系统繁忙，请稍后再试';
 		}
-		if ($this->is_ajax()) {
-			$arr = array('status' => 0, 'message' => $msg, 'data' => array('code' => $this->code));
+		if (self::is_ajax()) {
+			$arr = array('status' => 0, 'message' => $msg, 'data' => array('code' => $e->code));
 			echo json_encode($arr);
 		} else {
 			//如果debug关闭，则不显示debug错误信息
 			if (!$InitPHP_conf['is_debug']) {
-				return;
+				return InitPHP::return500();
 			}
-			$mainErrorCode=$this->getLineCode($this->getFile(), $this->getLine());
-			$trace=$this->getTrace();
-			$runTrace=$this->getTrace();
+			$trace = $e->getTrace();
+			$runTrace = $e->getTrace();
 			krsort($runTrace);
-			$traceMessageHtml=null;$k=1;
+			$traceMessageHtml = null;
+			$k=1;
 			foreach ($runTrace as $v) {
-				$traceMessageHtml.='<tr class="bg1"><td>'.$k.'</td><td>'.$v['file'].'</td><td>'.$v['line'].'</td><td>'.$this->getLineCode($v['file'], $v['line']).'</td></tr>';
+				$traceMessageHtml.='<tr class="bg1"><td>'.$k.'</td><td>'.$v['file'].'</td><td>'.$v['line'].'</td><td>'.self::getLineCode($v['file'], $v['line']).'</td></tr>';
 				$k++;
 			}
 			unset($k);unset($trace);unset($runTrace);unset($trace);
 			if (isset($InitPHP_conf['sqlcontrolarr']) && is_array($InitPHP_conf['sqlcontrolarr'])) {
+				$sqlTraceHtml = '';
 				foreach ($InitPHP_conf['sqlcontrolarr'] as $k => $v) {
 					$sqlTraceHtml.='<tr class="bg1"><td>'.($k+1).'</td><td>'.$v['sql'].'</td><td>'.$v['queryTime'].'s</td><td>'.$v['affectedRows'].'</td></tr>';
 				}
@@ -75,7 +103,6 @@ margin-top: 1em;
 padding: 4px;}
 	-->
 	</style></head><body><div id="container"><h1>InitPHP DEBUG</h1><div class="info">(1146)'.$msg.'</div><div class="info"><p><strong>PHP Trace</strong></p><table cellpadding="5" cellspacing="1" width="100%" class="table"><tr class="bg2"><td style="width:2%">No.</td><td style="width:45%">File</td><td style="width:5%">Line</td><td style="width:48%">Code</td></tr>'.$traceMessageHtml.'</table><p><strong>SQL Query</strong></p><table cellpadding="5" cellspacing="1" width="100%" class="table"><tr class="bg2"><td style="width:2%">No.</td><td style="width:73%">SQL</td><td style="width:10%">Cost Time</td><td style="width:15%">Affected Rows</td></tr>'.$sqlTraceHtml.'</table></div> <div class="help"><a href="http://'.$_SERVER['HTTP_HOST'].'">'.$_SERVER['HTTP_HOST'].'</a> 已经将此出错信息详细记录, 由此给您带来的访问不便我们深感歉意.</div></div></body></html>';
-			$this->_recordError($msg,$this->getFile(),$this->getLine(),$mainErrorCode);
 			exit;
 		}
 	}
@@ -83,7 +110,7 @@ padding: 4px;}
 	/**
 	 * @return bool
 	 */
-	private function is_ajax() {
+	private static function is_ajax() {
 		if ($_SERVER['HTTP_X_REQUESTED_WITH'] && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') return true;
 		if ($_POST['initphp_ajax'] || $_GET['initphp_ajax']) return true; //程序中自定义AJAX标识
 		return false;
@@ -95,7 +122,7 @@ padding: 4px;}
 	 * @param int $line
 	 * @return string
 	 */
-	private function getLineCode($file,$line) {
+	private static function getLineCode($file,$line) {
 		$fp = fopen($file,'r');
 		$i = 0;
 		while(!feof($fp)) {
@@ -114,19 +141,8 @@ padding: 4px;}
 	 * @param int $line
 	 * @param string $code
 	 */
-	private function _recordError($msg,$file,$line,$code){
-		$config = InitPHP::getConfig();
-		$errorLogPaTh = $config['log_dir'];
-		if (!is_dir($errorLogPath)) mkdir($errorLogPath);
-		$errorLogFilePath = $errorLogPaTh.$this->_errorLogFileName();
+	private static function _recordError($msg, $file, $line, $code){
 		$string.='['.date('Y-m-d h:i:s').']msg:'.$msg.';file:'.$file.';line:'.$line.';code:'.$code.'';
-		error_log($string, 3, $errorLogFilePath, '');
-	}
-	/**
-	 *
-	 * @return string
-	 */
-	private function _errorLogFileName(){
-		return "initphp_error_" . date('Y-m-d').'.log';
+		InitPHP::log($string, ERROR); //记录日志
 	}
 }

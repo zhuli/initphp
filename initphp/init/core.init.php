@@ -1,12 +1,12 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架  - 框架核心加载load类-所有的框架接口都从这个类出去
+ * InitPHP 3.8 国产PHP开发框架   - 框架核心加载load类-所有的框架接口都从这个类出去
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *------------------------------------------------------------------------------- 
- * Author:zhuli Dtime:2014-9-3
+ * Author:zhuli Dtime:2014-11-25
 ***********************************************************************************/
 class coreInit {
 	
@@ -40,13 +40,13 @@ class coreInit {
 		$class_path = $this->get_class_path($class_name, $type);
 		$class_name = $this->get_class_name($class_name);
 		if (!file_exists($class_path)) InitPHP::initError('file '. $class_name . '.php is not exist!');
-		if (!isset(self::$instance['initphp'][$class_name])) {
+		if (!isset(self::$instance['initphp'][$type][$class_name])) {
 			require_once($class_path);
 			if (!class_exists($class_name)) InitPHP::initError('class' . $class_name . ' is not exist!');
 			$init_class = new $class_name;
-			self::$instance['initphp'][$class_name] = $init_class;
+			self::$instance['initphp'][$type][$class_name] = $init_class;
 		}
-		return self::$instance['initphp'][$class_name];
+		return self::$instance['initphp'][$type][$class_name];
 	}
 	
 	/**
@@ -187,7 +187,7 @@ class coreInit {
 	}
 	
 	/**
-	 *	【私有】获取系统类文件路径
+	 *	获取系统类文件路径
 	 *  @param  string  $class_name  类名称
 	 *  @param  string  $type        类所属类型
 	 *  @return string
@@ -199,7 +199,7 @@ class coreInit {
 	}
 	
 	/**
-	 *	【私有】获取系统类完整名称
+	 *	获取系统类完整名称
 	 *  @param  string  $class_name  类名称
 	 *  @return string
 	 */

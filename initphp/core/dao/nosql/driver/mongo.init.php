@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.6 国产PHP开发框架  Dao-Nosql-Mongo 
+ * InitPHP 3.8 国产PHP开发框架   Dao-Nosql-Mongo 
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -33,7 +33,7 @@ class mongoInit {
 		if ($config['port'] == '')  $config['port'] = '27017';
 		if (!$config['option']) $config['option'] = array('connect' => true);
 		$server = 'mongodb://' . $config['server'] . ':' . $config['port'];
-		$this->mongo = new Mongo($server, $options);
+		$this->mongo = new Mongo($server, $config['option']);
 		if ($config['db_name'] == '') $config['db_name'] = 'test';
 		$this->db = $this->mongo->selectDB($config['db_name']);
 		if ($config['username'] != '' && $config['password'] != '') 

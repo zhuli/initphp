@@ -7,7 +7,7 @@ class helloController extends Controller {
 
 	//rest_post|post 方法名称 + | + HTTP方法名
 	public $initphp_list = array("white_list", "to_json", "rest_post|post", "rest_get|get", "get_info", "interceptor"); //Action白名单
-
+	
 	/**
 	 * Hello World DEMO
 	 * 每个Controller都需要继承Controller这个框架基类
@@ -33,7 +33,7 @@ class helloController extends Controller {
 			"username" => "initphp",
 			"age" => "10"
 			);
-			$this->controller->ajax_return(200, "SUCCESS", $array, "xml");
+		$this->controller->ajax_return(200, "SUCCESS", $array, "json");
 	}
 
 	/**
@@ -60,7 +60,7 @@ class helloController extends Controller {
 		echo "<br/><h1>GET方法获取URL中请求参数:" .$username. "</h1>";
 		$this->view->display("demo/hello_get_info"); //使用模板
 	}
-	
+
 	public function interceptor() {
 		echo "<br/><h1>拦截器例子</h1>";
 	}

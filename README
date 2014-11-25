@@ -1,5 +1,14 @@
-1. 新增框架拦截器
-2. 修改框架默认Module，Controller，Action逻辑，如果参数不存在则返回404错误页
-3. 修改获取IP地址的函数BUG
-4. 新增验证码增强类
-感谢 Anran <id0612@gmail.com>提供的支持
+InitPHP V3.8版本更新：
+1. 优化日志，自定义日志错误级别常量 ERROR  WARN  DEBUG  INFO。并且日志根据天来划分。
+2. 新增框架Service的RPC的调用功能，使业务分割更加容易。
+3. 解决框架coreInit中load全局加载方法类名可能会冲突的隐藏BUG
+4. 新增InitPHP扩展库的静态调用方式：InitPHP::getLibrarys() 
+5. 新增InitPHP工具库的静态调用方式：InitPHP::getUtil()
+6. 新增return403 return405方法 
+7. 优化ajax_return方法，支持jsonp类型  
+8. InitPHP::cli_init() 命令行错误提示优化
+9. 框架异常类exception 关闭调试不打印LOG的BUG修复
+10. 新增InitPHP::log，静态方式直接可以使用工具库中的日志类
+11. 注册全局变量方法
+12. 异常和错误捕获并记录日志的功能优化（采用统一的日志记录方式）
+感谢 @巴途Way @cloverphp @SK @西湖螃蟹 @Anran 等的建议和支持
