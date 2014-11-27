@@ -31,6 +31,9 @@ class dbInit extends sqlbuildInit {
 			$InitPHP_conf['sqlcontrolarr'][$k]['affectedRows']=$this->affected_rows();
 			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);
 		}
+	    if ($this->db->error()) {
+            InitPHP::initError($this->db->error());
+        }
 		if ($is_set_default) $this->set_default_link_id(); //设置默认的link_id
 		return $query;
 	}
