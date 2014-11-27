@@ -116,8 +116,6 @@ class runInit {
 	private function run_action($controller) {
 		$action = trim($_GET['a']);
 		$action = $action . $this->action_postfix;
-		/* REST 模式*/
-		$action = $this->run_rest($controller, $action);
 		if (!method_exists($controller, $action)) {
 			InitPHP::initError('Can not find default method : ' . $action);
 		}
@@ -147,35 +145,6 @@ class runInit {
 			}
 		}
 		return array($whiteList, $methodList);
-	}
-
-	/**
-	 * REST方式访问
-	 *  1. 控制器中需要定义 public $isRest变量
-	 *  2. 并且Action在rest数组列表中
-	 *  3. 程序就会走REST模式
-	 * @param object $controller 控制器对象
-	 * @return file
-	 */
-	private function run_rest($controller, $action) {
-		if (isset($controller->isRest) && in_array($action, $controller->isRest)) {
-			$rest_action = '';
-			$method = $_SERVER['REQUEST_METHOD'];
-			if ($method == 'POST') {
-				$rest_action = $action . '_post';
-			} elseif ($method == 'GET') {
-				$rest_action = $action . '_get';
-			} elseif ($method == 'PUT') {
-				$rest_action = $action . '_put';
-			} elseif ($method == 'DEL') {
-				$rest_action = $action . '_del';
-			} else {
-				return $action;
-			}
-			return $rest_action;
-		} else {
-			return $action;
-		}
 	}
 
 	/**

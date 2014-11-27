@@ -145,7 +145,7 @@ class controllerInit extends filterInit{
 	 */
 	public function check_token($ispost = true) {
 		if ($ispost && !$this->is_post()) return false;
-		if ($this->get_gp('init_token') !== $this->get_token()) return false;
+		if ($this->get_gp('init_token') != $this->get_token()) return false;
 		return true;
 	}
 	
