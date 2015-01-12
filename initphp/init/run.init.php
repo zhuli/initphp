@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架  - 框架运行器，所有的框架运行都需要通过此控制器
+ * InitPHP 3.8.1 国产PHP开发框架  - 框架运行器，所有的框架运行都需要通过此控制器
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -84,7 +84,12 @@ class runInit {
 		$controllerClass = $controller . $this->controller_postfix;
 		$controllerFilePath = $path . $module . $controllerClass . '.php';
 		if (!InitPHP::import($controllerFilePath)) {
-			return InitPHP::return404();
+			//如果开启了首字母大写,例如请求c=my,则类名为MyController
+			$controllerClass = ucfirst($controller) . $this->controller_postfix; //改成大写
+			$controllerFilePath = $path . $module . $controllerClass . '.php';
+			if (!InitPHP::import($controllerFilePath)) {
+				return InitPHP::return404();
+			}
 		}
 		$controllerObj = InitPHP::loadclass($controllerClass);
 		//处理Action，如果方法不存在，则直接返回404

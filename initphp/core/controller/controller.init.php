@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架   Controller-controller 控制器基类
+ * InitPHP 3.8.1 国产PHP开发框架   Controller-controller 控制器基类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -127,6 +127,20 @@ class controllerInit extends filterInit{
 	public function return405() {
 		header('HTTP/1.1 405 Method Not Allowed');
 		return;
+	}
+	
+	/**
+	 * 验证Service中$this->service->return_msg返回的结构
+	 * 是否正确。
+	 * Controller中使用方法：$this->controller->check_service_return()
+	 * @param array $data
+	 * @return boolean true|false
+	 */
+	public function check_service_return($data) {
+		if ($data[0] == true || $data[0] == 1) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**

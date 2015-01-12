@@ -1,14 +1,12 @@
-InitPHP V3.8版本更新：
-1. 优化日志，自定义日志错误级别常量 ERROR  WARN  DEBUG  INFO。并且日志根据天来划分。
-2. 新增框架Service的RPC的调用功能，使业务分割更加容易。
-3. 解决框架coreInit中load全局加载方法类名可能会冲突的隐藏BUG
-4. 新增InitPHP扩展库的静态调用方式：InitPHP::getLibrarys() 
-5. 新增InitPHP工具库的静态调用方式：InitPHP::getUtil()
-6. 新增return403 return405方法 
-7. 优化ajax_return方法，支持jsonp类型  
-8. InitPHP::cli_init() 命令行错误提示优化
-9. 框架异常类exception 关闭调试不打印LOG的BUG修复
-10. 新增InitPHP::log，静态方式直接可以使用工具库中的日志类
-11. 注册全局变量方法
-12. 异常和错误捕获并记录日志的功能优化（采用统一的日志记录方式）
-感谢 @巴途Way @cloverphp @SK @西湖螃蟹 @Anran 等的建议和支持
+InitPHP V3.8.1版本更新：
+1. 新增配置参数$InitPHP_conf['show_all_error']，开启情况，在DEBUG模式下打印所有PHP错误信息;默认情况error_reporting(E_ERROR | E_PARSE);
+2. 模板编译文件夹没有可写权限777的时候的提示信息。
+3. Controller中新增$this->controller->check_service_return()方法
+4. Nosql模块，不能多个实例同时运行的BUG修复
+5. 去除InitPHP::registerAutoloader方法
+6. INITPHP_OUT_PATH:支持自定义路径部署。例如：$InitPHP_conf['controller']['path']= 'INITPHP_OUT_PATH:/home/admin/www/admin'; 则可以自定义绝对路径。
+7. 修复RPC bug。getService少传一个$path的参数。
+8. 新增ip.init.php
+9. rpc_init()中的IP段判断方式重构。
+10.优化InitPHP::url方法，配置文件中的URL自动添加后斜杠/
+11.Controller自动支持首字母大写。例如MyController和myController，c的参数都为my

@@ -1,6 +1,6 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架
+ * InitPHP 3.8.1 国产PHP开发框架
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -19,6 +19,7 @@ $InitPHP_conf['url'] = 'http://127.0.0.1/initphp_3.8/demo/';
  * 是否开启调试
  */
 $InitPHP_conf['is_debug'] = true; //开启-正式上线请关闭
+$InitPHP_conf['show_all_error'] = false; //是否显示所有错误信息，必须在is_debug开启的情况下才能显示
 /**
  * 日志目录
  */
@@ -158,13 +159,19 @@ $InitPHP_conf['interceptor']['rule'] = array( //拦截器规则
 $InitPHP_conf['provider']['allow'] = array(
 	"user"
 ); //允许访问的Service,例如userService,则是user。如果带path，则xxx/user
+/*
+ * 网络范围表示方法：
+ * 通配符:      1.2.3.*
+ * CIDR值:     1.2.3.0/24
+ * IP段:       1.2.3.0-1.2.3.255
+ */
 $InitPHP_conf['provider']['allow_ip'] = array(
 	"127.0.0.2", "192.168.*.*", "127.0.0.*"
-); //允许内部调用的IP地址,如果需要填写ip段，则可以通过 192.168.*.*，使用*来匹配
+);
 $InitPHP_conf['customer'] = array(
 	"default" => array( //可以进行分组
 		"host" => array("127.0.0.1"), //服务提供者所在的服务器的IP地址，一般是内网IP地址。可以填写多台服务器
-		"file" => "/initphp/branches/initphp_3.8/demo/www/rpc.php" //访问服务的入口文件，例如加上IP地址：http://localhost/rpc.php
+		"file" => "/initphp/demo/www/rpc.php" //访问服务的入口文件，例如加上IP地址：http://localhost/rpc.php
 	)
 );
 

@@ -40,6 +40,10 @@ class exceptionInit extends Exception{
 		exit;
 	}
 	
+	/**
+	 * 异常模板
+	 * @param $e
+	 */
 	public static function errorTpl($e) {
 		$InitPHP_conf = InitPHP::getConfig();
 		$msg = $e->message;
@@ -60,7 +64,7 @@ class exceptionInit extends Exception{
 			$runTrace = $e->getTrace();
 			krsort($runTrace);
 			$traceMessageHtml = null;
-			$k=1;
+			$k = 1;
 			foreach ($runTrace as $v) {
 				$traceMessageHtml.='<tr class="bg1"><td>'.$k.'</td><td>'.$v['file'].'</td><td>'.$v['line'].'</td><td>'.self::getLineCode($v['file'], $v['line']).'</td></tr>';
 				$k++;
@@ -115,6 +119,7 @@ padding: 4px;}
 		if ($_POST['initphp_ajax'] || $_GET['initphp_ajax']) return true; //程序中自定义AJAX标识
 		return false;
 	}
+	
 	/**
 	 *
 	 * get error file line code

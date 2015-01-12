@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架   View-view 模板核心文件类
+ * InitPHP 3.8.1 国产PHP开发框架   View-view 模板核心文件类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -28,9 +28,8 @@ class templateInit {
 	 */
 	public function set_template_config($config) {
 		if (!is_array($config)) return false;
-		$appPath = InitPHP::getAppPath(''); //APP_PATH
-		$config['template_path']   = $appPath . $config['template_path'];
-		$config['template_c_path'] = $appPath . $config['template_c_path'];
+		$config['template_path']   = InitPHP::getAppPath($config['template_path']);
+		$config['template_c_path'] = InitPHP::getAppPath($config['template_c_path']);
 		if (isset($config['theme']) && !empty($config['theme'])) { //模板主题实现
 			$config['template_path'] = $config['template_path'] . '/' . $config['theme'];
 			$config['template_c_path'] = $config['template_c_path'] . '/' . $config['theme'];
@@ -93,7 +92,10 @@ class templateInit {
 		if (($path = dirname($compile_file_name)) !== $this->template_c_path) { //自动创建文件夹
 			$this->create_dir($path); 
 		}
-		@file_put_contents($compile_file_name, $str);
+		$ret = @file_put_contents($compile_file_name, $str);
+		if ($ret == false) {
+			InitPHP::initError("Please check the Directory have read/write permissions. If it's not, please set 777 limits. Can not write " . $compile_file_name);
+		}
 	}
 	
 	/**

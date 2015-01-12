@@ -1,6 +1,6 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架   框架入口文件 核心框架文件
+ * InitPHP 3.8.1 国产PHP开发框架   框架入口文件 核心框架文件
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -20,6 +20,16 @@ class InitPHP extends coreInit {
 	public static $time;
 
 	/**
+	 * debug模式打印所有PHP错误信息
+	 */
+	private static function isDebug() {
+		$InitPHP_conf = InitPHP::getConfig();
+		if (isset($InitPHP_conf['is_debug']) && $InitPHP_conf['is_debug'] == true && isset($InitPHP_conf['show_all_error']) && $InitPHP_conf['show_all_error'] == true) {
+			error_reporting(E_ALL^E_NOTICE);
+		}
+	}
+
+	/**
 	 * 运行InitPHP开发框架 - 框架运行核心函
 	 * 1. 在index.php中实例化InitPHP启动类 InitPHP::init();
 	 * 2. 初始化网站路由，运行框架
@@ -27,6 +37,7 @@ class InitPHP extends coreInit {
 	 * @return object
 	 */
 	public static function init() {
+		self::isDebug();
 		try {
 			require(INITPHP_PATH . '/init/dispatcher.init.php');
 			require(INITPHP_PATH . '/init/run.init.php');
@@ -50,6 +61,7 @@ class InitPHP extends coreInit {
 	 * @return object
 	 */
 	public static function cli_init($argv) {
+		self::isDebug();
 		try {
 			$InitPHP_conf = InitPHP::getConfig();
 			$argv[1] = ($argv[1] == '') ? '' : trim($argv[1]) . $InitPHP_conf['controller']['controller_postfix'];
@@ -73,6 +85,7 @@ class InitPHP extends coreInit {
 	 *
 	 */
 	public static function rpc_init() {
+		self::isDebug();
 		$ret = array();
 		$params = json_decode(urldecode($_POST['params']), true);
 		if (!is_array($params) || !$params['class'] || !$params['method']) {
@@ -89,40 +102,20 @@ class InitPHP extends coreInit {
 			return InitPHP::rpc_ret(405, "This class is not allow to access");
 		}
 		//判断IP地址
-		$requestClassPath = INITPHP_PATH . "/core/controller/request.init.php";
-		require($requestClassPath);
-		$request = new requestInit();
-		$ip = $request->get_ip();
+		$ipLib = InitPHP::getLibrarys("ip");
+		$ip = $ipLib->get_ip();
 		$isAllowIp = true;
 		if (isset($InitPHP_conf['provider']['allow_ip']) && is_array($InitPHP_conf['provider']['allow_ip'])) {
+			$isAllowIp = false;
 			foreach ($InitPHP_conf['provider']['allow_ip'] as $v) {
-				$pos = strpos($v, '*'); //如果查找到*，则可以匹配一个ip段
-				if ($pos) {
-					$vArr = explode(".", $v);
-					$uArr = explode(".", $ip);
-					$check = true;
-					foreach ($vArr as $k => $p) {
-						if ($p == "*") {
-							continue;
-						} else {
-							if ($p != $uArr[$k]) {
-								$check = false;
-								break;
-							}
-						}
-					}
-					if ($check == true) {
-						$isAllowIp = true;
-						break;
-					} else {
-						$isAllowIp = false;
-					}
+				if ($ip == $v) {
+					$isAllowIp = true;
+					break;
 				} else {
-					if ($ip == $v) {
+					//IP段匹配
+					if ($ipLib->ip_in_range($ip, $v) == true) {
 						$isAllowIp = true;
 						break;
-					} else {
-						$isAllowIp = false;
 					}
 				}
 			}
@@ -131,7 +124,7 @@ class InitPHP extends coreInit {
 			return InitPHP::rpc_ret(405, "This ip address is not allow to access");
 		}
 		//判断类是否存在
-		$obj = InitPHP::getService($class);
+		$obj = InitPHP::getService($class, $path);
 		if (!$obj) {
 			return InitPHP::rpc_ret(405, "can not find this class");
 		}
@@ -225,18 +218,6 @@ class InitPHP extends coreInit {
 	}
 
 	/**
-	 * 注册全局变量
-	 * 全局使用方法：InitPHP::registerAutoloader($callback)
-	 * @param string $callback
-	 * @return object
-	 */
-	public static function registerAutoloader($callback){
-		spl_autoload_unregister(array('InitPHP', 'autoloader'));
-		spl_autoload_register($callback);
-		spl_autoload_register(array('InitPHP', 'autoloader'));
-	}
-
-	/**
 	 * 框架hook插件机制
 	 * 1. 采用钩子挂载机制，一个钩子上可以挂载多个执行
 	 * 2. hook机制需要配置框架配置文件运行
@@ -315,7 +296,7 @@ class InitPHP extends coreInit {
 	 * 3. service需要在配置文件中配置参数，$path对应service目录中的子目录
 	 * 全局使用方法：InitPHP::getService($servicename, $path = '')
 	 * @param string $servicename 服务名称
-	 * @param string $path 路径
+	 * @param string $path 模块名称
 	 * @return object
 	 */
 	public static function getService($servicename, $path = '') {
@@ -387,7 +368,7 @@ class InitPHP extends coreInit {
 	 * @param $method 方法名称，例如 getUse
 	 * @param $args 参数，按照参数排序
 	 * @param $group 参数，分组参数
-	 * @param $path Service的路径
+	 * @param $path Service的模块名称
 	 * @param $timeout 最长请求时间
 	 */
 	public static function getRemoteService($class, $method, $args = array(), $group = "default",  $path = "", $timeout = 5) {
@@ -436,7 +417,7 @@ class InitPHP extends coreInit {
 	 * 3. dao需要在配置文件中配置参数，$path对应dao目录中的子目录
 	 * 全局使用方法：InitPHP::getDao($daoname, $path = '')
 	 * @param string $daoname 服务名称
-	 * @param string $path 路径
+	 * @param string $path 模块名称
 	 * @return object
 	 */
 	public static function getDao($daoname, $path = '') {
@@ -463,7 +444,7 @@ class InitPHP extends coreInit {
 	public static function url($action, $params = array(), $baseUrl = '') {
 		$InitPHP_conf = InitPHP::getConfig();
 		$action = explode("|", $action);
-		$baseUrl = ($baseUrl == '') ? $InitPHP_conf['url'] : $baseUrl;
+		$baseUrl = ($baseUrl == '') ? rtrim($InitPHP_conf['url'], "/") . "/" : $baseUrl;
 		$ismodule = $InitPHP_conf['ismodule'];
 		switch ($InitPHP_conf['isuri']) {
 
@@ -597,6 +578,11 @@ class InitPHP extends coreInit {
 	 * @return String
 	 */
 	public static function getAppPath($path = '') {
+		$tag = "INITPHP_OUT_PATH:";
+		$ret = strstr($path, $tag);
+		if ($ret != false) {
+			return ltrim($path, $tag);
+		}
 		if (!defined('APP_PATH')) return $path;
 		return rtrim(APP_PATH, '/') . '/' . $path;
 	}
@@ -639,7 +625,7 @@ class InitPHP extends coreInit {
 			call_user_func_array(array($controller, $functionName), $params);
 		}
 	}
-	
+
 	/**
 	 * 返回404错误页面
 	 */
@@ -649,7 +635,7 @@ class InitPHP extends coreInit {
 		self::_error_page("404 Not Found");
 		exit;
 	}
-	
+
 	/**
 	 * 返回405错误页面
 	 */
@@ -669,6 +655,8 @@ class InitPHP extends coreInit {
 		self::_error_page("500 Internal Server Error");
 		exit;
 	}
+	
+	
 
 	private static function _error_page($msg) {
 		$html = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">

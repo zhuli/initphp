@@ -26,6 +26,7 @@
   <li><a href="#$this->controller->return500">$this->controller->return500</a></li>
   <li><a href="#$this->controller->return403">$this->controller->return403</a></li>
   <li><a href="#$this->controller->return405">$this->controller->return405</a></li>
+  <li><a href="#$this->controller->check_service_return">$this->controller->check_service_return</a></li>
 </ul>
 <div class="nav"></div>
 <div class="title">1. $this->controller->ajax_return($status, $message = '', $data = array(), $type = 'json') AJAX返回数据结构<a name="$this->controller->ajax_return"></a></div>
@@ -314,6 +315,31 @@ class indexController extends Controller {
 	
 	public function run() {
 		$this->controller->return405()
+	}
+	
+}
+</pre>
+
+<div class="nav"></div>
+<div class="title">10. $this->controller->check_service_return() 验证Service返回的结构是否正确<a name="$this->controller->check_service_return"></a></div>
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>验证Service返回的结构是否正确。在Controller中使用</p>
+<div class="title">
+  <h3>使用：</h3>
+</div>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		if ($this->controller->check_service_return($ret)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

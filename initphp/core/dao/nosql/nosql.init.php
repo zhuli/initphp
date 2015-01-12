@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8 国产PHP开发框架   Dao-Nosql
+ * InitPHP 3.8.1 国产PHP开发框架   Dao-Nosql
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -25,8 +25,8 @@ class nosqlInit {
 		switch ($type) { 
 			case 'MONGO' :
 				$instance_name = 'mongo_' . $server;
-				if (isset(nosqlInit::$instance[$instance_name])) return nosqlInit::$instance['mongo'];
-				$mongo = $this->load_nosql('mongo.init.php', 'mongoInit');
+				if (isset(nosqlInit::$instance[$instance_name])) return nosqlInit::$instance[$instance_name];
+				$mongo = $this->load_nosql('mongo.init.php', 'mongoInit', $server);
 				$mongo->init($InitPHP_conf['mongo'][$server]);
 				nosqlInit::$instance[$instance_name] = $mongo;
 				return $mongo;
@@ -34,8 +34,8 @@ class nosqlInit {
 			
 			case 'REDIS' :
 				$instance_name = 'redis_' . $server;
-				if (isset(nosqlInit::$instance[$instance_name])) return nosqlInit::$instance['redis'];
-				$redis = $this->load_nosql('redis.init.php', 'redisInit');
+				if (isset(nosqlInit::$instance[$instance_name])) return nosqlInit::$instance[$instance_name];
+				$redis = $this->load_nosql('redis.init.php', 'redisInit', $server);
 				$redis->init($InitPHP_conf['redis'][$server]);
 				nosqlInit::$instance[$instance_name] = $redis;
 				return $redis;
@@ -47,18 +47,20 @@ class nosqlInit {
 	 * 加载不同NOSQL类文件
 	 * @param  string $file  缓存文件名 
 	 * @param  string $class 缓存类名
+	 * @param  String $server 服务器
 	 * @return obj
 	 */
-	private function load_nosql($file, $class) {
-		if (nosqlInit::$instance['require'][$file] !== TRUE) {
+	private function load_nosql($file, $class, $server) {
+		if (nosqlInit::$instance['require'][$file] != TRUE) {
 			require('driver/' . $file);
 			nosqlInit::$instance['require'][$file] = TRUE;
 		}
-		if (!nosqlInit::$instance['class'][$class]) {
-			nosqlInit::$instance['class'][$class] = new $class;
-			return nosqlInit::$instance['class'][$class];
+		$tag = $class . "_" . $server;
+		if (!nosqlInit::$instance['class'][$tag]) {
+			nosqlInit::$instance['class'][$tag] = new $class;
+			return nosqlInit::$instance['class'][$tag];
 		} else {
-			return nosqlInit::$instance['class'][$class];
+			return nosqlInit::$instance['class'][$tag];
 		}
 	}
 }
