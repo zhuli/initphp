@@ -100,11 +100,25 @@ class filterInit extends validateInit {
 	 * @return string
 	 */
 	public function filter_script($value) {
-		$value = preg_replace("/(javascript:)?on(click|load|key|mouse|error|abort|move|unload|change|dblclick|move|reset|resize|submit)/i","&111n\\2",$value);
-		$value = preg_replace("/<script(.*?)>(.*?)<\/script>/si","",$value);
-		$value = preg_replace("/<iframe(.*?)>(.*?)<\/iframe>/si","",$value);
-		$value = preg_replace ("/<object.+<\/object>/iesU", '', $value);
-		return $value;
+		if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $value[$k] = self::filter_script($v);
+            }
+            return $value;
+        } else {
+            $parten = array(
+                "/(javascript:)?on(click|load|key|mouse|error|abort|move|unload|change|dblclick|move|reset|resize|submit)/i",
+                "/<script(.*?)>(.*?)<\/script>/si",
+                "/<iframe(.*?)>(.*?)<\/iframe>/si",
+                "/<object.+<\/object>/isU"
+            );
+            $replace = array("\\2", "", "", "");
+            $value = preg_replace($parten, $replace, $value, -1, $count);
+            if ($count > 0) {
+                $value = self::filter_script($value);
+            }
+            return $value;
+        }
 	}
 	
 	/**
