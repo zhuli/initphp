@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Service服务层使用</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第4章 4.3 Service服务层使用</div>
+    <div class="header_right"><a href="4_2.htm">上一页</a> <a href="4_4.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>详细说明：</h3>
+</div>
+<ul>
+  <li>如果你的项目要采用InitPHP的分层体系方式，那么Service这一业务逻辑层是必须的，而且是应用程序核心的部分。</li>
+  <li>如果采用MVC模式，那么可以放弃此层应用，直接在Controller调用Dao层就可以了。</li>
+  <li>Service层是介于Controller和Dao中间层，主要的职责是处理业务的逻辑，封装成Controller可以通用调用的服务接口。例如：用户注册接口，userRegister()</li>
+  <li>因为各种项目和开发的不同，Service层在Mvc的时候不需要存在，所以InitPHP框架内置的Service API只有两个接口，也是Service比较常用的两个接口。</li>
+  <li>所有的Service需要继承InitPHP框架提供的框架基类Service</li>
+  <li><span style="color:#FF0000">建议使用Zend Studio工具开发，有代码提示功能，能将所有的API提示显示，方便您的开发速度</span></li>
+</ul>
+<div class="title">
+  <h3>API使用：</h3>
+</div>
+<ul>
+  <li><span style="color:#FF0000">在Service中，直接$this->service->就能获取到Service的API函数了，使用zend studio的话，会有代码提示。</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+class testService extends Service {
+	public function test() {
+		$this->service->parse_data(); //使用Service的API函数
+		$this->getTestaDao()->test();
+	}
+	/**
+	 * @return testDao
+	 */
+	private function getTestDao() {
+		return InitPHP::getDao('test', 'test');
+	}
+	/**
+	 * @return testaDao
+	 */
+	private function getTestaDao() {
+		return InitPHP::getDao('testa', 'test');
+	}
+}
+</pre>
+<div class="title">
+  <h3>应用配置：</h3>
+</div>
+<ul>
+  <li>一般情况下默认配置就可以了</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * Service配置参数
+ * 1. 你可以配置service的路径和文件（类名称）的后缀名
+ * 2. 一般情况下您不需要改动此配置
+ */
+$InitPHP_conf['service']['service_postfix']  = 'Service'; //后缀
+$InitPHP_conf['service']['path'] = 'library/service/'; //service路径
+</pre>
+<div class="title">
+  <h3>调用Service类：</h3>
+</div>
+<ul>
+  <li>InitPHP框架提供了一个<span style="color:#FF0000">InitPHP::getService()</span> 全局API函数，可以直接单例-实例化Service</li>
+  <li>接口有两个参数，第一个参数是Service的类名称，不需要带后缀'Service'；第二个参数是文件夹路径，默认Service都是放在<img src="static/folderopen.gif" />&nbsp;&nbsp;&nbsp;&nbsp;lib/service/文件夹下的，也会碰到项目比较庞大，将Service类进行分类，比如分成User的类，那么文件夹目录<img src="static/folderopen.gif" />&nbsp;&nbsp;&nbsp;&nbsp;lib/service/user/</li>
+  <li>InitPHP::getService和InitPHP::getDao两个接口的用法类似。全局都可以使用。如果用户采用MVC模式，直接在Controller中直接导入Dao即可。</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * 【静态】获取Service-实例并且单例模式获取Service
+ * 1.单例模式获取
+ * 2.可以选定对应Service路径path
+ * 3. service需要在配置文件中配置参数，$path对应service目录中的子目录
+ * 全局使用方法：InitPHP::getService($servicename, $path = '') 
+ * @param string $servicename 服务名称
+ * @param string $path 路径
+ * @return object
+ */
+public static function getService($servicename, $path = '') {
+	global $InitPHP_conf;
+	$path  = ($path == '') ? '' : $path . '/';
+	$class = $servicename . $InitPHP_conf['service']['service_postfix'];
+	$file  = rtrim($InitPHP_conf['service']['path'], '/') . '/' . $path . $class . '.php';
+	if (!InitPHP::import($file)) return false;
+	return InitPHP::loadclass($class);
+}
+
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->view->set_tpl('test'); //设置一个test.htm的模板页面
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'index.php?c=index&a=test 才会执行';
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	public function before() {
+		echo '前置执行Action';
+	}
+	
+	public function after() {
+		echo '后置执行Action';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test'); //获取Service
+	}
+
+}
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

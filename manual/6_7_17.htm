@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Zip文件压缩类</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.7.17 Zip文件压缩类</div>
+    <div class="header_right"><a href="6_7_16.htm">上一页</a> <a href="6_7_18.htm">下一页</a> </div>
+  </div>
+</div>
+
+
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>Zip压缩类。属于InitPHP框架扩展类，需要通过$this->getLibrary()方法获取</p>
+
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$zip = $this->getLibrary('zip'); 
+</pre>
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="php" class="php">
+$zip = $this->getLibrary('zip'); 
+//第一个参数为压缩的文件名称，第二个参数如果是数组，则压缩具体的文件 
+$zip->zip('test.zip', array('admin.php', 'controller/admin/indexController.php')); 
+//第二个参数为非数组，则压缩整个文件夹内容 
+$zip->zip('test.zip', 'template');</pre>
+<div class="title">
+  <h3>具体类：</h3>
+</div>
+<pre id="php" class="php">
+if (!defined('IS_INITPHP')) exit('Access Denied!');   
+/*********************************************************************************
+ * InitPHP 2.1 国产PHP开发框架  扩展类库-压缩文件类
+ *-------------------------------------------------------------------------------
+ * 版权所有: CopyRight By initphp.com
+ * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
+ *-------------------------------------------------------------------------------
+ * $Author:网络
+ * $Dtime:2011-10-09 
+***********************************************************************************/
+class zipInit {
+
+	public function zip($zipfilename, $dir = "./") {
+    	if (@function_exists('gzcompress')) { 
+    		$curdir = getcwd();
+    		if (is_array($dir)) {
+    			$filelist = $dir;
+      		} else {
+        	$filelist = $this->GetFileList($dir);
+   		}
+   		if (count($filelist)>0) {
+        	foreach($filelist as $filename) {
+          		if (is_file($filename))	{
+            		$fd = fopen ($filename, "r");
+            		$content = fread($fd, filesize ($filename));
+            		fclose ($fd);
+            		if (is_array($dir)) $filename = basename($filename);
+              		$this->addFile($content, $filename);
+          		}
+        	}
+        	$out = $this->file();
+        	$fp = fopen($zipfilename, "w");
+        	fwrite($fp, $out, strlen($out));
+        	fclose($fp);
+      	}
+      		return 1;
+    	} 
+    	else return 0;
+	}
+
+	private function GetFileList($dir) {
+    	if (file_exists($dir)) {
+      		if( substr( $dir, -1 ) != "/" || substr( $dir, -1 ) != "\\" ) {
+    			$dir .= "/";
+   			}
+      		$dh = opendir($dir);
+      		while($files = readdir($dh)) {
+        		if (($files!=".")&&($files!="..")) {
+          			if (is_dir($dir.$files)) {
+            			$file = array_merge($file, $this -> GetFileList( $dir.$files ));
+          			}
+            	else $file[]= $dir.$files;
+        		}
+      		}
+      		closedir($dh);
+    	}
+		$file[] = '';
+    	return $file;
+	}
+
+	var $datasec = array();
+	var $ctrl_dir = array();
+	var $eof_ctrl_dir = "\x50\x4b\x05\x06\x00\x00\x00\x00";
+	var $old_offset = 0;
+
+	private function unix2DosTime($unixtime = 0) {
+    	$timearray = ($unixtime == 0) ? getdate() : getdate($unixtime); 
+   		if ($timearray['year'] < 1980) {
+		  $timearray['year'] = 1980;
+		  $timearray['mon'] = 1;
+		  $timearray['mday'] = 1;
+		  $timearray['hours'] = 0;
+		  $timearray['minutes'] = 0;
+		  $timearray['seconds'] = 0;
+   		} 
+    	return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16) |
+    ($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
+	} 
+
+	private function addFile($data, $name, $time = 0) {
+		$name = str_replace('\\', '/', $name); 
+		$dtime = dechex($this->unix2DosTime($time));
+		$hexdtime = '\x' . $dtime[6] . $dtime[7]
+		. '\x' . $dtime[4] . $dtime[5]
+		. '\x' . $dtime[2] . $dtime[3]
+		. '\x' . $dtime[0] . $dtime[1];
+		eval('$hexdtime = "' . $hexdtime . '";');
+		
+		$fr = "\x50\x4b\x03\x04";
+		$fr .= "\x14\x00"; // ver needed to extract
+		$fr .= "\x00\x00"; // gen purpose bit flag
+		$fr .= "\x08\x00"; // compression method
+		$fr .= $hexdtime; // last mod time and date
+		
+		// "local file header" segment
+		$unc_len = strlen($data);
+		$crc = crc32($data);
+		$zdata = gzcompress($data);
+		$c_len = strlen($zdata);
+		$zdata = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
+		$fr .= pack('V', $crc); // crc32
+		$fr .= pack('V', $c_len); // compressed filesize
+		$fr .= pack('V', $unc_len); // uncompressed filesize
+		$fr .= pack('v', strlen($name)); // length of filename
+		$fr .= pack('v', 0); // extra field length
+		$fr .= $name;
+		
+		// "file data" segment
+		$fr .= $zdata;
+		
+		// "data descriptor" segment (optional but necessary if archive is not
+		// served as file)
+		$fr .= pack('V', $crc); // crc32
+		$fr .= pack('V', $c_len); // compressed filesize
+		$fr .= pack('V', $unc_len); // uncompressed filesize
+		
+		// add this entry to array
+		$this -> datasec[] = $fr;
+		$new_offset = strlen(implode('', $this->datasec));
+		
+		// now add to central directory record
+		$cdrec = "\x50\x4b\x01\x02";
+		$cdrec .= "\x00\x00"; // version made by
+		$cdrec .= "\x14\x00"; // version needed to extract
+		$cdrec .= "\x00\x00"; // gen purpose bit flag
+		$cdrec .= "\x08\x00"; // compression method
+		$cdrec .= $hexdtime; // last mod time & date
+		$cdrec .= pack('V', $crc); // crc32
+		$cdrec .= pack('V', $c_len); // compressed filesize
+		$cdrec .= pack('V', $unc_len); // uncompressed filesize
+		$cdrec .= pack('v', strlen($name) ); // length of filename
+		$cdrec .= pack('v', 0 ); // extra field length
+		$cdrec .= pack('v', 0 ); // file comment length
+		$cdrec .= pack('v', 0 ); // disk number start
+		$cdrec .= pack('v', 0 ); // internal file attributes
+		$cdrec .= pack('V', 32 ); // external file attributes - 'archive' bit set
+		
+		$cdrec .= pack('V', $this -> old_offset ); // relative offset of local header
+		$this->old_offset = $new_offset;
+		
+		$cdrec .= $name;
+	
+		$this->ctrl_dir[] = $cdrec;
+	} 
+
+	private function file() {
+		$data = implode('', $this -> datasec);
+		$ctrldir = implode('', $this -> ctrl_dir);
+		
+		return
+		$data .
+		$ctrldir .
+		$this -> eof_ctrl_dir .
+		pack('v', sizeof($this -> ctrl_dir)) . 
+		pack('v', sizeof($this -> ctrl_dir)) . 
+		pack('V', strlen($ctrldir)) .
+		pack('V', strlen($data)) . 
+		"\x00\x00"; 
+	} 
+} 
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

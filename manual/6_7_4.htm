@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Down文件下载</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.7.4 Down文件下载</div>
+    <div class="header_right"><a href="6_7_3.htm">上一页</a> <a href="6_7_5.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>用户文件下载的类。可以自定义下载文件类型，默认为：".jpg", ".txt", ".gif", ".png", ".rar"。属于InitPHP框架扩展类，需要通过$this->getLibrary()方法获取</p>
+
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$down = $this->getLibrary('download'); 
+</pre>
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="php" class="php">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$down = $this->getLibrary('download');
+		$down->down('www.rar');
+		$this->view->set_tpl('test'); //设置一个test.htm的模板页面
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'index.php?c=index&a=test 才会执行';
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}</pre>
+<div class="title">
+  <h3>具体类：</h3>
+</div>
+<pre id="php" class="php">
+if (!defined('IS_INITPHP')) exit('Access Denied!');   
+/*********************************************************************************
+ * InitPHP 2.1 国产PHP开发框架  扩展类库-下载类
+ *-------------------------------------------------------------------------------
+ * 版权所有: CopyRight By initphp.com
+ * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
+ *-------------------------------------------------------------------------------
+ * $Author:zhuli
+ * $Dtime:2011-10-09 
+***********************************************************************************/
+class downloadInit { 
+	
+	private $allow = array(".jpg", ".txt", ".gif", ".png", ".rar"); //允许下载的文件类型
+	 
+	/**
+	 *	文件下载
+	 * 	@param  string  $file_name    文件名
+	 * 	@param  string  $server_path  文件目录
+	 * 	@param  string  $mime_type    传输类型
+	 *  @return 
+	 */
+	public function down($file_name, $server_path = './', $mime_type = 'application/octet-stream') {
+		$full_file_name = $server_path . '/' . $file_name;
+		$this->check_file_ext($file_name);
+		$this->check_file_exists($full_file_name);
+		header("Content-Type: {$mime_type}"); 
+		$file_name = '"' . htmlspecialchars($file_name) . '"'; 
+        $file_size = filesize($full_file_name); 
+        header("Content-Disposition: attachment; filename={$file_name}; charset=utf-8"); 
+        header("Content-Length: {$file_size}"); 
+        readfile($full_file_name); 
+        exit;  
+	}
+	
+	/**
+	 *	检测文件类型
+	 * 	@param  string  $file_name    文件名
+	 *  @return 
+	 */
+	private function check_file_ext($file) {
+		$file_ext = strtolower(substr($file, -4)); 
+		if (!in_array($file_ext, $this->allow)) exit('this file is deny!');
+		return true;
+	}
+	
+	/**
+	 *	检测文件是否存在
+	 * 	@param  string  $full_file_name  带目录的文件名
+	 *  @return 
+	 */
+	private function check_file_exists($full_file_name) {
+		if (!file_exists($full_file_name)) exit('this file does not exit!');
+		return true;
+	}
+} 
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>
