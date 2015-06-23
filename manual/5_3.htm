@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Rest风格</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第5章 5.3 Rest风格</div>
+    <div class="header_right"><a href="5_2.htm">上一页</a> <a href="6_1.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">
+  <h3>REST设计风格：</h3>
+</div>
+<ul>
+  <li>REST(Representational State Transfer表述性状态转移)是一种针对网络应用的设计和开发方式，可以降低开发的复杂性，提高系统的可伸缩性。</li>
+  <li>网络上的所有事物都被抽象为资源</li>
+  <li>每个资源对应一个唯一的资源标识</li>
+  <li>对资源的各种操作不会改变资源标识</li>
+  <li>无状态的</li>
+  <li>例如HTTP请求是GET的，则调用程序中get的方法，如果HTTP请求是POST的，则是POST的方法，PUT或者DEL也是同理</li>
+  <li>一般GET是获取数据操作，POST是新增数据操作，PUT是更新数据操作，DEL是删除数据操作</li>
+</ul>
+<div class="title">
+  <h3>REST实例：</h3>
+</div>
+<ul>
+  <li>需要有一个白名单，$isRest，指明走REST风格的Action名称</li>
+  <li>走REST风格的Action，如果是get模式，则(Action名称+"_get")，如果是post模式，则(Action名称+"_post")，如果是put模式，则(Action名称+"_put")，如果是del模式，则(Action名称+"_del")</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * InitPHP开源框架 - DEM
+ * @author zhuli
+ */
+class helloController extends Controller {
+
+	//rest_post|post 方法名称 + | + HTTP方法名
+	public $initphp_list = array("white_list", "to_json", "rest_post|post", "rest_get|get"); //Action白名单
+	
+	/**
+	 * 这个是rest get方法请求
+	 */
+	public function rest_get() {
+		$curl = $this->getLibrary("curl");
+		echo "<br/><h1>只能通过GET方法请求</h1>";
+	}
+	
+	/**
+	 * rest请求方式，这个方法必须使用 HTTP post来请求
+	 */
+	public function rest_post() {
+		echo "<br/><h1>只能通过POST方法请求</h1>";
+	}
+}
+</pre>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

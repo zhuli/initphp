@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - View视图层使用</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第4章 4.5 View视图层使用</div>
+    <div class="header_right"><a href="4_4.htm">上一页</a> <a href="4_6.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">
+  <h3>详细说明：</h3>
+</div>
+<ul>
+  <li>View层是指模板层，用于展示静态HTML页面</li>
+  <li><span style="color:#FF0000">View层有两部分组成，API和模板标签规则。</span></li>
+  <li>API：$this->view在Controller类中使用，一共提供5个框架内置函数，用户模板赋值、页面输出。</li>
+  <li>模板标签：InitPHP提供default和simple两套模板标签规则，根据框架的规范您还可以设计自己的模板体系</li>
+  <li>View层的代码主要在：<img src="static/folderopen.gif" />&nbsp;&nbsp;&nbsp;&nbsp;initphp/core/view/文件夹下</li>
+  <li><span style="color:#FF0000">建议使用Zend Studio工具开发，有代码提示功能，能将所有的API提示显示，方便您的开发速度</span></li>
+</ul>
+<div class="title">
+  <h3>API使用：</h3>
+</div>
+<ul>
+  <li>View的API在Controller类中使用，主要用来变量赋值，模板设置和输出等操作，一共5个接口函数。</li>
+  <li>API：set_tpl('test')是设置模板，test是指模板目录下的test.htm文件，.htm默认后缀不需要填写</li>
+  <li>API: set_tpl('test','F')设置模板的第二个参数，F-头模板，L-脚步模板</li>
+  <li><span style="color:#FF0000">下面的示例代码中包含了API的所有使用方法。</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+class indexController extends Controller {
+	
+	public $initphp_list = array('test'); 
+	
+	public function run() {
+		$this->view->assign('username', '模板赋值方法');
+		//模板会按照顺序设置，但是set_tpl函数中的第二个参数F和L分别让模板最先和最后显示
+		$this->view->set_tpl('test'); //设置一个template/test.htm的模板页面
+		$this->view->set_tpl('user/userinfo'); //设置template/user/userinfo.htm
+		$this->view->set_tpl('header', 'F'); //设置为头部,最先显示
+		$this->view->set_tpl('footer', 'L'); //最后显示
+		$this->view->remove_tpl('test'); //可以移除上面已经设置的test.htm模板
+		$this->view->get_tpl(); //可以得到已经设置的模板数组
+		$this->view->display(); //模板显示
+	}
+	
+	public function test() {
+		echo 'index.php?c=index&a=test 才会执行';
+		$code = $this->getLibrary('code');
+		$code->getcode();
+	}
+	
+	public function before() {
+		echo '前置执行Action';
+	}
+	
+	public function after() {
+		echo '后置执行Action';
+	}
+	
+	/**
+	 * @return testService
+	 */
+	private function getTestService() {
+		return InitPHP::getService('test','test');
+	}
+
+}
+</pre>
+<div class="title">
+  <h3>配置详解：</h3>
+</div>
+<ul>
+  <li>框架配置文件：<img src="static/page.gif" />&nbsp;initphp/initphp.conf.php</li>
+  <li>如果你需要自定义修改模板参数，可以从<img src="static/page.gif" />&nbsp;initphp/initphp.conf.php&nbsp;&nbsp;
+    放进应用&nbsp;&nbsp;<img src="static/page.gif" />&nbsp;conf/conf.php文件中 </li>
+  <li>一般情况下，不需要修改配置文件</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/**
+ * 模板配置
+ * 1. 可以自定义模板的文件夹，编译模板路径，模板文件后缀名称，编译模板后缀名称
+ * 是否编译，模板的驱动和模板的主题
+ * 2. 一般情况下，默认配置是最优的配置方案，你可以不选择修改模板文件参数
+ */
+$InitPHP_conf['template']['template_path']      = 'template'; //模板路径
+$InitPHP_conf['template']['template_c_path']    = 'template_c'; //模板编译路径 
+$InitPHP_conf['template']['template_type']      = 'htm'; //模板文件类型  
+$InitPHP_conf['template']['template_c_type']    = 'tpl.php';//模板编译文件类型 
+$InitPHP_conf['template']['template_tag_left']  = '&lt!--{';//模板左标签
+$InitPHP_conf['template']['template_tag_right'] = '}--&gt';//模板右标签
+$InitPHP_conf['template']['is_compile']         = true;//模板每次编译-系统上线后可以关闭此功能
+$InitPHP_conf['template']['driver']             = 'simple'; //不同的模板驱动编译
+$InitPHP_conf['template']['theme']              = ''; //模板主题
+</pre>
+<div class="title">
+  <h3>模板使用：</h3>
+</div>
+<ul>
+  <li>框架自带两个模板：default和simple，这两个模板标签的规则使用起来都是非常大众的方法，也非常简单。</li>
+  <li>配置文件中$InitPHP_conf['template']['driver']参数来修改不同的模板驱动，例如值为：'default'或者'simple'</li>
+  <li>InitPHP模板标签支持原生的
+    <?php ?>
+    代码</li>
+  <li><span style="color:#FF0000">具体参看以下使用方法：</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/* 以下是simple的模板标签使用方法：*/
+
+/* 配置文件修改： */
+$InitPHP_conf['template']['driver']             = 'simple';
+
+/* 标签使用方法： */
+
+/* 普通使用方法：*/
+&lt!--{echo $uid;}--&gt
+
+/* if语句使用：*/
+&lt!--{if ($a == 'yes')}--&gt
+&lt!--{elseif ($a == 'no')}--&gt
+&lt!--{else}--&gt
+&lt!--{if}--&gt //注意：if结束标签前需要加'/if'，这里文档无法显示
+
+/* foreach语句使用:*/
+&lt!--{foreach ($a as $k => $V)}--&gt
+&lt!--{foreach}--&gt //注意：foreach结束标签前需要加'/'，这里文档无法显示
+
+/* for语句使用：*/
+&lt!--{for ($i=0; $i<100; $i++)}--&gt
+&lt!--{for}--&gt //注意：for结束标签前需要加'/'，这里文档无法显示
+
+/* 输出变量：*/
+&lt!--{$username}--&gt
+
+/* 输出常量：*/
+&lt!--{APP_PATH}--&gt
+
+&lt!--{layout:user}--&gt 
+
+</pre>
+<pre id="PHP" class="prettyprint">
+/* 以下是default的模板标签使用方法（具体使用和PHP中一样）：*/
+
+/* 配置文件修改：*/
+$InitPHP_conf['template']['driver']             = 'default';
+
+/* 一个简单的模板*/
+&lt!--{echo $uid;}--&gt
+&lt!--{if (true == true) { }--&gt
+&lt!--{}}--&gt
+&lt!--{layout:user}--&gt 
+</pre>
+<div class="title">
+  <h3>设计自己的模板：</h3>
+</div>
+<ul>
+  <li>自定义的模板标签放置在：<img src="static/folderopen.gif" />&nbsp;initphp/core/view/driver/文件夹下，该文件夹下已经有 <img src="static/page.gif" />&nbsp;default.init.php&nbsp;&nbsp;和&nbsp;&nbsp;<img src="static/page.gif" />&nbsp;simple.init.php，分别为default和simple两个模板标签驱动。 </li>
+  <li>文件的名称为：标签驱动名称+'.init.php'，例如：simple.init.php</li>
+  <li>类名称为：标签驱动名称+'Init'，例如：simpleInit</li>
+  <li>需要定义一个init($str, $left, $right)的公有函数，$str是需要替换的HTML代码，$left是模板标签的左标记（默认：'&lt;!--{'），$right是模板标签的右标记（默认：'}--&gt;'）</li>
+  <li>需要使用自定义模板标签的时候，别忘记修改配置文件中的：$InitPHP_conf['template']['driver']</li>
+  <li><span style="color:#FF0000">具体参看下面的simple模板标签驱动：</span></li>
+</ul>
+<pre id="PHP" class="prettyprint">
+if (!defined('IS_INITPHP')) exit('Access Denied!');
+/*********************************************************************************
+ * InitPHP 2.1 国产PHP开发框架  View-simple 简单模板驱动规则模型
+ *-------------------------------------------------------------------------------
+ * 版权所有: CopyRight By initphp.com
+ * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
+ *-------------------------------------------------------------------------------
+ * $Author:zhuli
+ * $Dtime:2011-10-09 
+***********************************************************************************/
+class simpleInit {
+
+	/**
+	 * 模板驱动-简单的驱动
+	 * @param  string $str 模板文件数据
+	 * @return string
+	 */
+	 public function init($str, $left, $right) {
+	 	//if操作
+	 	$str = preg_replace( "/".$left."if\s+(.+?)".$right."/", "<?php if \\1 { ?>", $str );
+		$str = preg_replace( "/".$left."else".$right."/", "<?php } else { ?>", $str );
+		$str = preg_replace( "/".$left."elseif\s+(.+?)".$right."/", "<?php } elseif \\1 { ?>", $str );
+		//for操作
+		$str = preg_replace("/".$left."for\s+(.+?)".$right."/","<?php for \\1 { ?>",$str);
+		$str = preg_replace("/".$left."\/for".$right."/","<?php } ?>",$str);
+		//foreach操作
+		$str = preg_replace("/".$left."foreach\s+(.+?)".$right."/","<?php foreach \\1 { ?>",$str);
+		$str = preg_replace("/".$left."\/foreach".$right."/","<?php } ?>",$str);
+		//输出变量
+		$str = preg_replace( "/".$left."(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)".$right."/", "<?php echo \\1;?>", $str );
+		//常量输出
+		$str = preg_replace( "/".$left."([A-Z_\x7f-\xff][A-Z0-9_\x7f-\xff]*)".$right."/s", "<?php echo \\1;?>", $str );
+		//标签解析
+		$str = preg_replace ( "/".$left."\/if".$right."/", "<?php } ?>", $str );
+	 	$pattern = array('/'.$left.'/', '/'.$right.'/');
+		$replacement = array('<?php ', ' ?>');
+		return preg_replace($pattern, $replacement, $str);
+	 }
+}
+</pre>
+<div class="title">
+  <h3>layout布局：</h3>
+</div>
+<ul>
+  <li>模板HTML页面中使用Layout：&lt;!--{layout:version}--&gt;。规则：左标签+'layout:'+'模板名称（不需要带.htm，有目录则user/version，和set_tpl()一样使用）'+右标签</li>
+  <li>Layout是为了解决用户在HTML页面中来实现模板布局，html中使用了&lt;!--{layout:version}--&gt;，则会显示version.htm静态页面</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+/* 模板布局，在所有模板引擎中该方法都通用 */
+/* 模板布局主要是为了解决模板切割成多个小模板，模板中能直接调用使用*/
+/* 标签使用：layout:模板名称（不需要带模板名称后缀，例如user.htm模板，则直接user。如果模板有多个文件夹，则test/user 代表test/user.htm模板）*/
+&lt!--{layout:user}--&gt 
+</pre>
+<div class="title">
+  <h3>模板主题：</h3>
+</div>
+<ul>
+  <li>一般情况下，一个网站会有多个模板主题，InitPHP提供了简单的模板主题配置方法</li>
+  <li>用户只需要配置$InitPHP_conf['template']['theme']这个变量，如果是red的主题，则值为'red'</li>
+  <li>模板主题都是放在模板默认的目录下面的，例如'red'主题，则模板文件夹目录为：<img src="static/folderopen.gif" />&nbsp;template/red/文件夹下</li>
+  <li><span style="color:#FF0000">实际上只是在模板默认的文件目录下再添加了一层目录，这样可以方便多主题的应用</span></li>
+</ul>
+<div class="title">
+  <h3>编译机制：</h3>
+</div>
+<ul>
+  <li>InitPHP的模板机制都会将HTML页面编译成.php文件，默认为（template_c/编译文件夹和.tpl.php后缀名称）</li>
+  <li><span style="color:#FF0000">$InitPHP_conf['template']['is_compile']是否开启编译机制，建议开发的时候开启，开发完成上线后，关闭该参数</span></li>
+</ul>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

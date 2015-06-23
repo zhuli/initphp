@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Log</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.6.4 Log</div>
+    <div class="header_right"><a href="6_6_3.htm">上一页</a> <a href="6_6_5.htm">下一页</a> </div>
+  </div>
+</div>
+
+<div class="title">
+  <h3>工具描述：</h3>
+</div>
+<p>主要是用来在开发的时候调试BUG记录日志用。属于InitPHP框架工具类，需要通过$this->getUtil()方法获取</p>
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$log = $this->getUtil('log'); 
+</pre>
+<div class="nav"></div>
+<div class="title">
+  <h4>接口描述：</h4>
+</div>
+<div class="jk">
+接口：$error->write($message, $log_type = 'DEBUG') 写日志
+</div>
+<table >
+    <tr >
+      <th style="width:20%;"> 参数 </th>
+      <th style="width:20%;"> 类型 </th>
+      <th style="width:10%;"> 是否必须 </th>
+      <th style="width:50%;"> 描述 </th>
+    </tr>
+    <tr>
+      <td>$message</td>
+      <td>String</td>
+      <td>是</td>
+      <td>日志信息</td>
+    </tr>
+	    <tr>
+      <td>$log_type</td>
+      <td>String</td>
+      <td>是</td>
+      <td>日志类型</td>
+    </tr>
+</table>
+
+
+<div class="nav"></div>
+<div class="title">
+  <h3>实例：</h3>
+</div>
+<pre id="php" class="php">
+$log = $this->getUtil('log');
+$log->write('测试的信息', 'DEBUG');</pre>
+
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

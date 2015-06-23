@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - Zip文件压缩类</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第6章 6.7.18 验证码增强类</div>
+    <div class="header_right"><a href="6_7_17.htm">上一页</a> <a href="6_7_19.htm">下一页</a> </div>
+  </div>
+</div>
+
+
+<div class="title">
+  <h3>接口描述：</h3>
+</div>
+<p>验证码增强类。属于InitPHP框架扩展类，需要通过$this->getLibrary()方法获取</p>
+
+<div class="title">
+  <h3>使用方法：</h3>
+</div>
+<pre id="php" class="php">
+$captcha = $this->getLibrary('captcha'); 
+</pre>
+<div class="nav"></div>
+<pre id="php" class="php">
+				// 配置
+                $config = array('font' => ROOT . '/data/font/' . mt_rand(0, 7) . '.ttf');
+                $param = $this->controller->get_gp(array('width', 'height', 'length', 'size'));
+                foreach ($param as $key => $val) {
+                    $val = (int) $val;
+                    if (0 < $val) {
+                        $config[$key] = $val;
+                    }
+                }
+                unset($param, $key, $val);
+
+                // 最小要求
+                if (isset($config['length']) && 4 > $config['length']) {
+                    unset($config['length']);
+                }
+                if (isset($config['width']) && 240 < $config['width']) {
+                    unset($config['width']);
+                }
+                if (isset($config['height']) && 80 < $config['height']) {
+                    unset($config['height']);
+                }
+
+                // 获取 captcha
+                $_SESSION['captcha'] = $this->getLibrary('captcha')->get($config);
+                unset($config);
+</pre>
+
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>

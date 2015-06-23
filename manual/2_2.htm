@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>InitPHP框架 PHP框架 - A PHP Framework - 创建入口文件</title>
+<link href="static/common.css" type="text/css" rel="stylesheet" />
+<meta name="keywords" content="php框架，国产php框架, initphp框架，MVC，分层体系" />
+<meta name="description" content="initphp框架是一款国产php框架。initphp框架主要基于MVC模式，具备代码清晰，操作简单，功能齐全，开发快速，高效安全等特点，是您选择php框架的首选。" />
+</head>
+<body>
+<div class="header">
+  <div class="header_nav">InitPHP (A PHP Framework) 用户手册</div>
+  <div class="header_div">
+    <div class="header_title">第2章 2.2 创建入口文件</div>
+    <div class="header_right"><a href="2_1.htm">上一页</a> <a href="2_3.htm">下一页</a> </div>
+  </div>
+</div>
+<div class="title">创建入口文件index.php：</div>
+<ul>
+  <li>需要require_once 框架入口文件initphp.php</li>
+  <li>需要require_once 你自己的配置文件</li>
+  <li>项目运行全局函数InitPHP::init()用来初始化框架</li>
+</ul>
+<pre id="PHP" class="prettyprint">
+define("APP_PATH",dirname(__FILE__)); //app项目目录
+header("Content-Type:text/html; charset=utf-8"); 
+require_once('initphp/initphp.php'); //导入配置文件-必须载入
+require_once('conf/config.php'); //导入配置文件-必须载入，如果自己不配置，则默认走框架的配置文件
+InitPHP::init(); //框架初始化
+</pre>
+<div class="footer">版权所有：<a href="">http://initphp.com</a> InitPHP (A PHP Framework) By @Aliyun_zhuli</div>
+<script src="static/jquery.js" type="text/javascript"></script>
+<link href="static/prettify/prettify.css" rel="stylesheet" type="text/css">
+<script src="static/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript" src="static/comm.js"></script>
+</body>
+</html>
