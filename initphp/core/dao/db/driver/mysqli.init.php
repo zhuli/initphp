@@ -69,7 +69,7 @@ class mysqliInit extends dbbaseInit{
 	 * @return array
 	 */
 	public function fetch_fields($result) {
-		return mysqli_fetch_field($result);
+		return mysqli_fetch_fields($result);
 	}
 	
 	/**
