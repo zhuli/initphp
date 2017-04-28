@@ -1,12 +1,6 @@
-InitPHP V3.8.1版本更新：
-1. 新增配置参数$InitPHP_conf['show_all_error']，开启情况，在DEBUG模式下打印所有PHP错误信息;默认情况error_reporting(E_ERROR | E_PARSE);
-2. 模板编译文件夹没有可写权限777的时候的提示信息。
-3. Controller中新增$this->controller->check_service_return()方法
-4. Nosql模块，不能多个实例同时运行的BUG修复
-5. 去除InitPHP::registerAutoloader方法
-6. INITPHP_OUT_PATH:支持自定义路径部署。例如：$InitPHP_conf['controller']['path']= 'INITPHP_OUT_PATH:/home/admin/www/admin'; 则可以自定义绝对路径。
-7. 修复RPC bug。getService少传一个$path的参数。
-8. 新增ip.init.php
-9. rpc_init()中的IP段判断方式重构。
-10.优化InitPHP::url方法，配置文件中的URL自动添加后斜杠/
-11.Controller自动支持首字母大写。例如MyController和myController，c的参数都为my
+﻿InitPHP V3.8.3版本更新：
+1. 修改拼音类BUG
+2. 异常出错页面设置http 500状态
+3. 修改分表求余方法BUG
+4. 修改getConrtoller方法 大小写控制器首字母的兼容
+5. 修改debug模式下，sql语句记录分析的功能长时间跑job导致数组溢出的BUG

@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架   Dao-ddb 多库-主从-分表解决方案
+ * InitPHP 3.8.2 国产PHP开发框架   Dao-ddb 多库-主从-分表解决方案
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -60,9 +60,19 @@ class dbhandlerInit {
 	 * @param string $sql SQL语句进行分析
 	 * @return object
 	 */
-	protected function get_link_id($sql) {
+	/**
+	 * 获取link_id 数据库链接资源符
+	 * @param string $sql SQL语句进行分析
+	 * @return object
+	 */
+	protected function get_link_id($sql = "") {
 		$InitPHP_conf = InitPHP::getConfig();
 		$db_type = $InitPHP_conf['db'][$this->dbModel]['db_type'];
+		//如果sql语句为空，则直接返回link_id
+		if ($sql == "") {
+			$this->db->link_id = self::$dbArr[$this->dbModel]['link_id'];
+			return $this->db->link_id;
+		}
 		if (isset($InitPHP_conf['issqlcontrol']) && $InitPHP_conf['issqlcontrol'] == 1) {
 			$InitPHP_conf['sqlcontrolarr'][] = $sql;
 			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);	
@@ -77,7 +87,7 @@ class dbhandlerInit {
 			$this->db->link_id = self::$dbArr[$this->dbModel]['link_id'];
 		}
 		return $this->db->link_id;
-	} 
+	}
 
 	/**
 	 * 每次query执行完毕后，都会将默认的link_id指向默认数据库链接地址
@@ -188,7 +198,7 @@ class dbhandlerInit {
 	 * @return 
 	 */
 	public function fmod_identify($num, $tbl, $default = 7) {
-		return $tbl . '_' . fmod($num/$default);
+		return $tbl . '_' . fmod($num, $default);
 	}
 	
 }

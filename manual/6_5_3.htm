@@ -379,7 +379,14 @@ class testaDao extends Dao {
 	
 	public $db = 'test';
 	public function test() {
+		// WHERE `sad` = 100
 		echo $this->dao->db->build_where(array('sad'=>100));
+		// WHERE `age` IN ('15', '18', '19')
+		echo $this->dao->db->build_where(array('age'=>array(15,18,19)));
+		// WHERE `age`>15 AND `age`<20
+		echo $this->dao->db->build_where(array('age'=>array('>'=>15, '<'=>20)));
+		// WHERE `age` like '%sad%'
+		echo $this->dao->db->build_where(array('name'=>array('like'=>'%sad%')));
 	}
 }
 </pre>

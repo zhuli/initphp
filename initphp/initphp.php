@@ -1,6 +1,6 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架   框架入口文件 核心框架文件
+ * InitPHP 3.8.2 国产PHP开发框架   框架入口文件 核心框架文件
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -10,7 +10,7 @@
 require_once('initphp.conf.php'); //导入框架配置类
 require_once('init/core.init.php'); //导入核心类文件
 require_once('init/exception.init.php'); //导入核心类文件
-require_once('init/interceptorInterface.init.php'); //导入拦截器接口
+require_once('init/interceptorInterface.init.php'); //导入拦截器接口 
 define("ERROR", "ERROR");
 define("WARN", "WARN");
 define("DEBUG", "DEBUG");
@@ -318,7 +318,7 @@ class InitPHP extends coreInit {
 	public static function getLibrarys($className) {
 		$classPath = INITPHP_PATH . "/library/" . $className . '.init.php';
 		$classFullName = $className . "Init";
-		if (!file_exists($classPath)) InitPHP::initError('file '. $class_name . '.php is not exist!');
+		if (!file_exists($classPath)) InitPHP::initError('file '. $className . '.php is not exist!');
 		if (!isset(parent::$instance['initphp']['l'][$classFullName])) {
 			require_once($classPath);
 			if (!class_exists($classFullName)) InitPHP::initError('class' . $classFullName . ' is not exist!');
@@ -338,7 +338,7 @@ class InitPHP extends coreInit {
 	public static function getUtils($className) {
 		$classPath = INITPHP_PATH . "/core/util/" . $className . '.init.php';
 		$classFullName = $className . "Init";
-		if (!file_exists($classPath)) InitPHP::initError('file '. $class_name . '.php is not exist!');
+		if (!file_exists($classPath)) InitPHP::initError('file '. $className . '.php is not exist!');
 		if (!isset(parent::$instance['initphp']['u'][$classFullName])) {
 			require_once($classPath);
 			if (!class_exists($classFullName)) InitPHP::initError('class' . $classFullName . ' is not exist!');
@@ -551,13 +551,19 @@ class InitPHP extends coreInit {
 
 	/**
 	 * 获取全局配置文件
-	 * 全局使用方法：InitPHP::getConfig()
-	 * @param $msg
-	 * @return Array
+	 * 全局使用方法：InitPHP::getConfig('controller.path')
+	 * @param string $path 获取的配置路径 多级用点号分隔
+	 * @return mixed
 	 */
-	public static function getConfig() {
+	public static function getConfig($path='') {
 		global $InitPHP_conf;
-		return $InitPHP_conf;
+		if (empty($path)) return $InitPHP_conf;
+		$tmp = $InitPHP_conf;
+		$paths = explode('.', $path);
+		foreach ($paths as $item) {
+			$tmp = $tmp[$item];
+		}
+		return $tmp;
 	}
 
 	/**
@@ -609,11 +615,15 @@ class InitPHP extends coreInit {
 	 * @param $controllerPath 控制器文件夹名称,例如在控制器文件夹目录中，还有一层目录，user/则，该参数需要填写
 	 * @return
 	 */
-	public function getController($controllerName, $functionName, $params = array(), $controllerPath = '') {
+	public static function getController($controllerName, $functionName, $params = array(), $controllerPath = '') {
 		$InitPHP_conf = InitPHP::getConfig();
 		$controllerPath = ($controllerPath == '') ? '' : rtrim($controllerPath, '/') . '/';
 		$path = rtrim($InitPHP_conf['controller']['path'], '/') . '/' . $controllerPath . $controllerName . '.php';
-		InitPHP::import($path);
+		if (!InitPHP::import($path)) {
+			$controllerName = ucfirst($controllerName);
+			$path = rtrim($InitPHP_conf['controller']['path'], '/') . '/' . $controllerPath . $controllerName . '.php';
+			InitPHP::import($path);
+		}
 		$controller = InitPHP::loadclass($controllerName);
 		if (!$controller)
 		return InitPHP::initError('can not loadclass : ' . $controllerName);

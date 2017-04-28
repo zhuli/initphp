@@ -17,6 +17,7 @@ class exceptionInit extends Exception{
 	 */
 	public static function cliErrorTpl($e) {
 		$InitPHP_conf = InitPHP::getConfig();
+		$msg = $e->message;
 		$mainErrorCode = $e->getLineCode($e->getFile(), $e->getLine());
 		self::_recordError($msg,$e->getFile(),$e->getLine(),trim($mainErrorCode));
 		//如果debug关闭，则不显示debug错误信息
@@ -60,6 +61,9 @@ class exceptionInit extends Exception{
 			if (!$InitPHP_conf['is_debug']) {
 				return InitPHP::return500();
 			}
+			//网页500
+			header('HTTP/1.1 500 Internal Server Error');
+			header("status: 500 Internal Server Error");
 			$trace = $e->getTrace();
 			$runTrace = $e->getTrace();
 			krsort($runTrace);

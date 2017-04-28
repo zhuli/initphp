@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架   Dao-sqlbuild 数据字段安全封装类
+ * InitPHP 3.8.2 国产PHP开发框架   Dao-sqlbuild 数据字段安全封装类
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -95,6 +95,7 @@ class sqlbuildInit extends dbhandlerInit {
 	
 	/**
 	 * SQL组装-组装AND符号的WHERE语句
+	 * 支持复杂类型：例如:$val = array("name" => array("like" => "sdasd"));
 	 * 返回：WHERE a = 'a' AND b = 'b'
 	 * DAO中使用方法：$this->dao->db->build_where($val)
 	 * @param array $val array('key' => 'val')
@@ -104,7 +105,18 @@ class sqlbuildInit extends dbhandlerInit {
 		if (!is_array($val) || empty($val)) return '';
 		$temp = array();
 		foreach ($val as $k => $v) {
-			$temp[] = $this->build_kv($k, $v);
+			if (is_array($v)) {
+				$ktmp = $this->build_escape($k, 1);
+				if (array_keys($v) !== range(0, count($v) - 1)) {
+					foreach($v as $op => $value) {
+						$temp[] = $ktmp .' '. $op .' '. $this->build_escape($value);
+					}	
+				} else {
+					$temp[] = $ktmp . $this->build_in($v);
+				}
+			}else{
+				$temp[] = $this->build_kv($k, $v);
+			}
 		}
 		return ' WHERE ' . implode(' AND ', $temp);
 	}

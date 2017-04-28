@@ -1,6 +1,6 @@
 <?php
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架
+ * InitPHP 3.8.2 国产PHP开发框架
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -58,7 +58,7 @@ $InitPHP_conf['dao']['path']  = 'library/dao/'; //后缀
  * 4. 支持多库配置 $InitPHP_conf['db']['default']
  * 5. 详细见文档
  */
-$InitPHP_conf['db']['driver']   = 'mysqli'; //选择不同的数据库DB 引擎，一般默认mysqli,或者mysqls
+$InitPHP_conf['db']['driver']   = 'mysql'; //选择不同的数据库DB 引擎，一般默认mysqli,或者mysql
 //default数据库配置 一般使用中 $this->init_db('default')-> 或者 $this->init_db()-> 为默认的模型
 $InitPHP_conf['db']['default']['db_type']                   = 0; //0-单个服务器，1-读写分离，2-随机
 $InitPHP_conf['db']['default'][0]['host']                   = '127.0.0.1'; //主机

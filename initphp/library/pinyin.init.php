@@ -1,12 +1,13 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');   
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架   扩展类库-pinyin
+ * InitPHP 3.3 国产PHP开发框架  扩展类库-pinyin
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
  *-------------------------------------------------------------------------------
- * Author:zhuli Dtime:2014-11-25 
+ * $Author:zhuli
+ * $Dtime:2013-5-29 
 ***********************************************************************************/
 class pinyinInit {
 
@@ -16,7 +17,7 @@ class pinyinInit {
 	 * 对外接口
 	 */
 	public function pinyin($string, $utf8 = true) {
-		$string = ($utf8 === true) ? iconv('utf-8', 'gbk', $string) : $string;
+		$string = ($utf8 === true) ? iconv('utf-8', 'gbk//IGNORE', $string) : $string;
 		if ($this->pinyinArr == NULL) {
 			$this->pinyinArr = $this->pinyin_code();
 		}

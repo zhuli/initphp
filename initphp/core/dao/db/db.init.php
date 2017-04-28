@@ -1,7 +1,7 @@
 <?php
 if (!defined('IS_INITPHP')) exit('Access Denied!');
 /*********************************************************************************
- * InitPHP 3.8.1 国产PHP开发框架   Dao-db 常用SQL方法封装
+ * InitPHP 3.8.2 国产PHP开发框架   Dao-db 常用SQL方法封装
  *-------------------------------------------------------------------------------
  * 版权所有: CopyRight By initphp.com
  * 您可以自由使用该源码，但是在使用过程中，请保留作者信息。尊重他人劳动成果就是尊重自己
@@ -25,11 +25,13 @@ class dbInit extends sqlbuildInit {
 		//sql query debug		
 		if($InitPHP_conf['is_debug']==true){
 			$k= isset($InitPHP_conf['sqlcontrolarr']) ? count($InitPHP_conf['sqlcontrolarr']) : 0;
-			$InitPHP_conf['sqlcontrolarr'][$k]['sql']=$sql;
-			$costTime=substr(($end-$start),0,7);
-			$InitPHP_conf['sqlcontrolarr'][$k]['queryTime']=$costTime;
-			$InitPHP_conf['sqlcontrolarr'][$k]['affectedRows']=$this->affected_rows();
-			InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);
+			if ($k < 50) {
+				$InitPHP_conf['sqlcontrolarr'][$k]['sql']=$sql;
+				$costTime=substr(($end-$start),0,7);
+				$InitPHP_conf['sqlcontrolarr'][$k]['queryTime']=$costTime;
+				$InitPHP_conf['sqlcontrolarr'][$k]['affectedRows']=$this->affected_rows();
+				InitPHP::setConfig('sqlcontrolarr', $InitPHP_conf['sqlcontrolarr']);
+			}
 		}
 	    if ($this->db->error()) {
             InitPHP::initError($this->db->error());
@@ -101,36 +103,56 @@ class dbInit extends sqlbuildInit {
 	/**
 	 * 获取上一INSERT的ID值
      * DAO中使用方法：$this->dao->db->insert_id()
+     * @param String $db 如果在多库连接的情况下，因为多库连接会自动切换db_link,所以
+     * insert_id方法需要指定特定的DB，才能正常使用
 	 * @return Int
 	 */
-	public function insert_id() {
+	public function insert_id($db = "") {
+		if ($db != "") {
+			$this->get_link_id();
+		}
 		return $this->db->insert_id();
 	}
 	
 	/**
 	 * 前一次操作影响的记录数
 	 * DAO中使用方法：$this->dao->db->affected_rows()
+     * @param String $db 如果在多库连接的情况下，因为多库连接会自动切换db_link,所以
+     * affected_rows方法需要指定特定的DB，才能正常使用
 	 * @return int
 	 */
-	public function affected_rows() {
+	public function affected_rows($db = "") {
+		if ($db != "") {
+			$this->get_link_id();
+		}
 		return $this->db->affected_rows();
 	}
 	
 	/**
 	 * 关闭连接
 	 * DAO中使用方法：$this->dao->db->close()
+     * @param String $db 如果在多库连接的情况下，因为多库连接会自动切换db_link,所以
+     * affected_rows方法需要指定特定的DB，才能正常使用
 	 * @return bool
 	 */
-	public function close() {
+	public function close($db = "") {
+		if ($db != "") {
+			$this->get_link_id();
+		}
 		return $this->db->close();
 	}
 	
 	/**
 	 * 错误信息
 	 * DAO中使用方法：$this->dao->db->error()
+     * @param String $db 如果在多库连接的情况下，因为多库连接会自动切换db_link,所以
+     * affected_rows方法需要指定特定的DB，才能正常使用
 	 * @return string
 	 */
-	public function error() {
+	public function error($db = "") {
+		if ($db != "") {
+			$this->get_link_id();
+		}
 		return $this->db->error();
 	}
 	
