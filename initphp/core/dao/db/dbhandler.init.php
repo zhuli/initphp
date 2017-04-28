@@ -13,6 +13,9 @@ require_once("driver/dbbase.init.php");
 class dbhandlerInit {  
 	 
 	protected static $dbArr = array(); // 存储 driver，db对象
+	/**
+	 * @var mysqliInit|null
+	 */
 	protected $db = NULL; //DB引擎对象
 	protected $driverArr = array(); 
 	protected $dbModel = NULL; //DB配置模型，默认为default
@@ -22,7 +25,8 @@ class dbhandlerInit {
 	 * 1. 可以在使用中通过$this->init_db('test')来切换数据库
 	 * 2. 该函数是DB默认初始化入口
 	 * 3. 支持多数据库链接，主从，随机分布式数据库
-	 * @param obj $db
+	 * @param string $db
+	 * @return array
 	 */
 	public function init_db($db = '') {
 		$InitPHP_conf = InitPHP::getConfig(); 
@@ -38,13 +42,13 @@ class dbhandlerInit {
 		$config 	= $InitPHP_conf['db'][$this->dbModel];
 		switch ($db_type) {
 			case 1: //主从模型 
-				$key = floor(mt_rand(1,(count($config) - 2)));
+				$key = (int)(mt_rand(1,(count($config) - 2)));
 				self::$dbArr[$this->dbModel]['master']['link_id'] = $this->db_connect($config[0], $driver);
 				self::$dbArr[$this->dbModel]['salver']['link_id'] = $this->db_connect($config[$key], $driver);
 				break;
 			
 			case 2: //随机模型
-				$key = floor(mt_rand(0,count($config) - 2));
+				$key = (int)(mt_rand(0,count($config) - 2));
 				self::$dbArr[$this->dbModel]['link_id'] = $this->db_connect($config[$key], $driver);
 				break;
 				
@@ -109,6 +113,7 @@ class dbhandlerInit {
 	 * 2. dirver 默认如果是mysql连接，可以不填写，如果填写了driver，则会使用不同的数据库类型，例如：mysqli
 	 * 3. $this->db 是db类对象，单例
 	 * @param array $config
+	 * @param string $driver
 	 * @return object
 	 */
 	private function db_connect($config, $driver) {
@@ -157,6 +162,7 @@ class dbhandlerInit {
 	 * Dao中使用方法：$this->dao->db->month_identify($tbl, $defaultId = '')
 	 * @param string $tbl
 	 * @param string $defaultId
+	 * @return string
 	 */
 	public function month_identify($tbl, $defaultId = '') {
 		if (empty ( $defaultId )) {
@@ -176,6 +182,7 @@ class dbhandlerInit {
 	 * @param int $num     数值
 	 * @param string $tbl  模板前缀
 	 * @param int $default 默认截取长度
+	 * @return string
 	 */
 	public function num_identify($num, $tbl, $default = 1) {
 		$num = (string) $num;
@@ -195,7 +202,7 @@ class dbhandlerInit {
 	 * @param int $num
 	 * @param string $tbl
 	 * @param int $default
-	 * @return 
+	 * @return int
 	 */
 	public function fmod_identify($num, $tbl, $default = 7) {
 		return $tbl . '_' . fmod($num, $default);

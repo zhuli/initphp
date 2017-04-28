@@ -35,6 +35,7 @@ class coreInit {
 	 * 使用方法：$this->load($class_name, $type)
 	 * @param string $class_name 类名称
 	 * @param string $type 类别
+	 * @return mixed
 	 */
 	public function load($class_name, $type) {
 		$class_path = $this->get_class_path($class_name, $type);
@@ -54,7 +55,7 @@ class coreInit {
 	 *  1. 通过$this->getLibrary($class) 就可以加载Library下面的类
 	 *  2. 单例模式-通过load核心函数加载
 	 *  全局使用方法：$this->getLibrary($class)
-	 *  @param  string  $class_name  类名称
+	 *  @param  string  $class  类名称
 	 *  @return object
 	 */
 	public function getLibrary($class) {
@@ -66,7 +67,7 @@ class coreInit {
 	 *  1. 通过$this->getUtil($class) 就可以加载Util下面的类
 	 *  2. 单例模式-通过load核心函数加载
 	 *  全局使用方法：$this->getUtil($class)
-	 *  @param  string  $class_name  类名称
+	 *  @param  string  $class  类名称
 	 *  @return object
 	 */
 	public function getUtil($class) {
@@ -105,6 +106,7 @@ class coreInit {
 	 * 使用Mongo，你的服务器端需要安装Mongo
 	 * 需要在配置文件中配置$InitPHP_conf['mongo'][服务器server]
 	 * 如果多个mongo分布，则直接可以改变$server就可以切换
+	 * @param string $server
 	 * @return mongoInit
 	 */
 	public function getMongo($server = 'default') {
@@ -121,6 +123,7 @@ class coreInit {
 	 * 使用Redis，你的服务器端需要安装Redis
 	 * 需要在配置文件中配置$InitPHP_conf['redis'][服务器server]
 	 * 如果多个redis分布，则直接可以改变$server就可以切换
+	 * @param string $server
 	 * @return redisInit
 	 */
 	public function getRedis($server = 'default') {
@@ -134,41 +137,41 @@ class coreInit {
 	/**
 	 * 获取m
 	 * 全局使用方法：$this->getM()
-	 * @return 
+	 * @return string
 	 */
 	public static function getM() {
 		$InitPHP_conf = InitPHP::getConfig();
 		if ($InitPHP_conf['ismodule'] === false) return '';
-		if ($_GET['m'] == '') return $InitPHP_conf['controller']['default_module'];
-		return $_GET['m'];
+		if (empty($_GET['m'])) return $InitPHP_conf['controller']['default_module'];
+		return (string)$_GET['m'];
 	}
 	
 	/**
 	 * 获取c
 	 * 全局使用方法：$this->getC()
-	 * @return 
+	 * @return string
 	 */
 	public static function getC() {
 		$InitPHP_conf = InitPHP::getConfig();
-		if ($_GET['c'] == '') return $InitPHP_conf['controller']['default_controller'];
-		return $_GET['c'];
+		if (empty($_GET['c'])) return $InitPHP_conf['controller']['default_controller'];
+		return (string)$_GET['c'];
 	}
 	
 	/**
 	 * 获取a
 	 * 全局使用方法：$this->getA()
-	 * @return 
+	 * @return string
 	 */
 	public static function getA() {
 		$InitPHP_conf = InitPHP::getConfig();
-		if ($_GET['a'] == '') return $InitPHP_conf['controller']['default_action'];
-		return $_GET['a'];
+		if (empty($_GET['a'])) return $InitPHP_conf['controller']['default_action'];
+		return (string)$_GET['a'];
 	}
 	
 	/**
 	 * 注册到框架全局可用变量
 	 * @param string $name 变量名称
-	 * @param val $value   变量值
+	 * @param string $value   变量值
 	 */
 	public function register_global($name, $value) {
 		self::$instance['global'][$name] = $value;

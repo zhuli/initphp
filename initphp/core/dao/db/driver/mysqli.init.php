@@ -20,8 +20,8 @@ class mysqliInit extends dbbaseInit{
 	 * @param  string $password 数据库登录密码
 	 * @param  string $database 数据库
 	 * @param  string $charset 编码
-	 * @param  string $pconnect 是否持久链接
-	 * @return obj
+	 * @param  int $pconnect 是否持久链接
+	 * @return \mysqli
 	 */
 	public function connect($host, $user, $password, $database, $charset = 'utf8', $pconnect = 0) {
 		$port = 3306; //设置默认值
@@ -30,7 +30,7 @@ class mysqliInit extends dbbaseInit{
 			$host = $arr[0];
 			$port = $arr[1];
 		}
-		$link_id = ($pconnect == 0) ? mysqli_connect($host, $user, $password, $database, $port) : mysqli_pconnect($host, $user, $password, $database, $port);
+		$link_id = ($pconnect == 0) ? mysqli_connect($host, $user, $password, $database, $port) : mysqli_connect("p:$host", $user, $password, $database, $port);
 		if (!$link_id) InitPHP::initError("mysqli connect error");
 		mysqli_query($link_id, 'SET NAMES ' . $charset);
 		return $link_id;
@@ -38,8 +38,11 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * SQL执行器
+	 * For successful SELECT, SHOW, DESCRIBE or EXPLAIN queries, mysqli_query() will return a mysqli_result object.
+	 * For other successful queries mysqli_query() will return TRUE.
+	 * Returns FALSE on failure.
 	 * @param  string $sql SQL语句
-	 * @return obj
+	 * @return mysqli_result|bool
 	 */
 	public function query($sql) {
 		return mysqli_query($this->link_id, $sql);
@@ -47,16 +50,17 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的行数
-	 * @param $result 结果集
-	 * @return array
+	 * @param mysqli $result
+	 * @param $num
+	 * @return mysqli_result|bool
 	 */
 	public function result($result, $num=1) {
-		return mysqli_result($result, $num);
+		return mysqli_store_result($result);
 	}
 		
 	/**
 	 * 从结果集中取得一行作为关联数组
-	 * @param $result 结果集
+	 * @param mysqli_result $result 结果集
 	 * @return array
 	 */
 	public function fetch_assoc($result) {
@@ -65,7 +69,7 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * 从结果集中取得列信息并作为对象返回
-	 * @param  $result 结果集
+	 * @param  mysqli_result $result
 	 * @return array
 	 */
 	public function fetch_fields($result) {
@@ -74,7 +78,7 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的行数
-	 * @param $result 结果集
+	 * @param mysqli_result $result
 	 * @return int
 	 */
 	public function num_rows($result) {
@@ -83,7 +87,7 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的字段数量
-	 * @param $result 结果集
+	 * @param mysqli_result $result
 	 * @return int
 	 */
 	public function num_fields($result) {
@@ -92,10 +96,10 @@ class mysqliInit extends dbbaseInit{
 	
 	/**
 	 * 释放结果内存
-	 * @param obj $result 需要释放的对象
+	 * @param \mysqli_result $result 需要释放的对象
 	 */
 	public function free_result($result) {
-		return mysqli_free_result($result);
+		mysqli_free_result($result);
 	}
 	
 	/**

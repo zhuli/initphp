@@ -17,7 +17,6 @@ class debugInit {
 	 * 使用方法：$this->getUtil('debug')->dump($data, $isexit = 0)
 	 * @param  string  $data   参数
 	 * @param  int     $isexit 是否跳出
-	 * @return 
 	 */
 	public function dump($data, $isexit = 0) {
 	
@@ -26,7 +25,7 @@ class debugInit {
         $output = ob_get_clean();
         if (!extension_loaded('xdebug')) {
             $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
-            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+            $output = '<pre>' . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
         }
 		echo $output;
 		if ($isexit) exit();
@@ -37,7 +36,7 @@ class debugInit {
 	 * debug-BUG调试工具-程序标记
 	 * 使用方法：$this->getUtil('debug')->mark($name)
 	 * @param  string  $name 开始和结束时间的标记名称
-	 * @return 
+	 * @return array
 	 */
 	public function mark($name) {
 		self::$mark_arr['time'][$name][] = microtime(TRUE);
@@ -49,8 +48,8 @@ class debugInit {
 	 * debug-BUG调试工具-计算程序段使用的时间
 	 * 使用方法：$this->getUtil('debug')->use_time($name, $decimal = 6)
 	 * @param  string  $name 开始和结束时间的标记名称
-	 * @param  string  $decimal 小数位数
-	 * @return 
+	 * @param  int  $decimal 小数位数
+	 * @return string
 	 */
 	public function use_time($name, $decimal = 6) {
 		if (!isset(self::$mark_arr['time'][$name][1])) {
@@ -63,7 +62,7 @@ class debugInit {
 	 * debug-BUG调试工具-计算程序段计算内存使用峰值
 	 * 使用方法：$this->getUtil('debug')->use_memory($name)
 	 * @param  string  $name 开始和结束时间的标记名称
-	 * @return 
+	 * @return string
 	 */
 	public function use_memory($name) {
 		if (!isset(self::$mark_arr['memory'][$name][1])) {

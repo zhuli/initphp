@@ -18,34 +18,35 @@ abstract class dbbaseInit{
 	 * @param  string $password 数据库登录密码
 	 * @param  string $database 数据库
 	 * @param  string $charset 编码
-	 * @param  string $pconnect 是否持久链接
+	 * @param  int $pconnect 是否持久链接
 	 */
 	abstract protected function connect($host, $user, $password, $database, $charset = 'utf8', $pconnect = 0);
 	
 	/**
 	 * 抽象数据库执行语句
 	 * @param  string $sql SQL语句
-	 * @return obj
+	 * @return mixed
 	 */
 	abstract protected function query($sql);
 	
 	/**
 	 * 抽象数据库-结果集中的行数
-	 * @param $result 结果集
+	 * @param mixed $result 结果集
+	 * @param int $num
 	 * @return array
 	 */
 	abstract protected function result($result, $num=1);
 	
 	/**
 	 * 抽象数据库-从结果集中取得一行作为关联数组
-	 * @param $result 结果集
+	 * @param mixed $result 结果集
 	 * @return array
 	 */
 	abstract protected function fetch_assoc($result);
 	
 	/**
 	 * 抽象数据库-从结果集中取得列信息并作为对象返回
-	 * @param  $result 结果集
+	 * @param  mixed $result 结果集
 	 * @return array
 	 */
 	abstract protected function fetch_fields($result);
@@ -58,14 +59,14 @@ abstract class dbbaseInit{
 	
 	/**
 	 * 抽象数据库-结果集中的行数
-	 * @param $result 结果集
+	 * @param mixed $result 结果集
 	 * @return int
 	 */
 	abstract protected function num_rows($result);
 	
 	/**
 	 * 抽象数据库-结果集中的字段数量
-	 * @param $result 结果集
+	 * @param mixed $result 结果集
 	 * @return int
 	 */
 	abstract protected function num_fields($result);
@@ -78,14 +79,13 @@ abstract class dbbaseInit{
 	
 	/**
 	 * 抽象数据库-释放结果内存
-	 * @param obj $result 需要释放的对象
+	 * @param mixed $result 需要释放的对象
 	 */
 	abstract protected function free_result($result);
 	
 	/**
 	 * 抽象数据库链接关闭
-	 * @param  string $sql SQL语句
-	 * @return obj
+	 * @return bool
 	 */
 	abstract protected function close();
 	

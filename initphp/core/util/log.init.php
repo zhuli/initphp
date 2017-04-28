@@ -17,7 +17,6 @@ class logInit {
 	 * 使用方法：$this->getUtil('log')->write('日志内容');
 	 * @param  string  $message  日志信息
 	 * @param  string  $log_type 日志类型   ERROR  WARN  DEBUG  INFO
-	 * @return
 	 */
 	public function write($message, $log_type = 'DEBUG') {
 		$log_path = $this->get_file_log_name();

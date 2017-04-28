@@ -14,11 +14,12 @@ class exceptionInit extends Exception{
 	
 	/**
 	 * 命令行运行，异常模板
+	 * @param \Exception
 	 */
-	public static function cliErrorTpl($e) {
+	public static function cliErrorTpl(\Exception $e) {
 		$InitPHP_conf = InitPHP::getConfig();
 		$msg = $e->message;
-		$mainErrorCode = $e->getLineCode($e->getFile(), $e->getLine());
+		$mainErrorCode = self::getLineCode($e->getFile(), $e->getLine());
 		self::_recordError($msg,$e->getFile(),$e->getLine(),trim($mainErrorCode));
 		//如果debug关闭，则不显示debug错误信息
 		$trace = $e->getTrace();
@@ -43,9 +44,10 @@ class exceptionInit extends Exception{
 	
 	/**
 	 * 异常模板
-	 * @param $e
+	 * @param \Exception $e
 	 */
-	public static function errorTpl($e) {
+	public static function errorTpl(\Exception $e) {
+		$sqlTraceHtml = '';
 		$InitPHP_conf = InitPHP::getConfig();
 		$msg = $e->message;
 		$mainErrorCode = self::getLineCode($e->getFile(), $e->getLine());
@@ -142,6 +144,7 @@ padding: 4px;}
 				break;
 			}
 		}
+		return 0;
 	}
 	/**
 	 * record error log
@@ -151,7 +154,7 @@ padding: 4px;}
 	 * @param string $code
 	 */
 	private static function _recordError($msg, $file, $line, $code){
-		$string.='['.date('Y-m-d h:i:s').']msg:'.$msg.';file:'.$file.';line:'.$line.';code:'.$code.'';
+		$string ='['.date('Y-m-d h:i:s').']msg:'.$msg.';file:'.$file.';line:'.$line.';code:'.$code.'';
 		InitPHP::log($string, ERROR); //记录日志
 	}
 }

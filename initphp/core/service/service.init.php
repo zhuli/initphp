@@ -15,7 +15,7 @@ class serviceInit {
 	 *  Service中使用方法：$this->service->parse_data($field, $data)
 	 * 	@param  array   $field   可信任字段 array(array('field', 'int'))
 	 * 	@param  array   $data    传入的参数
-	 *  @return object
+	 *  @return array
 	 */
 	public function parse_data($field, $data) {
 		$field = (array) $field;
@@ -39,7 +39,7 @@ class serviceInit {
 	 * 	@param  int    $status   返回参数状态
 	 * 	@param  string $msg      提示信息
 	 * 	@param  string $data     传递的参数
-	 *  @return object
+	 *  @return array
 	 */
 	public function return_msg($status, $msg, $data = '') {
 		return array($status, $msg, $data);

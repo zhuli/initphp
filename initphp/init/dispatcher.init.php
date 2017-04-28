@@ -67,6 +67,7 @@ class dispatcherInit {
 	 * 1. 解析index.php/user/new/username
 	 * 2. 解析成数组，array()
 	 * @param string $request
+	 * @return array
 	 */
 	private function parsePathUri($request) {
 		$InitPHP_conf = InitPHP::getConfig();
@@ -108,6 +109,7 @@ class dispatcherInit {
 	 * 1. 解析index.php/user/new/username/?id=100
 	 * 2. 解析成数组，array()
 	 * @param string $request
+	 * @return array
 	 */
 	private function parseRewriteUri($request) {
 		$InitPHP_conf = InitPHP::getConfig();
@@ -132,6 +134,7 @@ class dispatcherInit {
 	 * 1. 解析user-add.htm?uid=100
 	 * 2. 解析成数组，array()
 	 * @param string $request
+	 * @return array
 	 */
 	private function parseHtmlUri($request) {
 		$InitPHP_conf = InitPHP::getConfig();

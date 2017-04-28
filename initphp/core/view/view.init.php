@@ -18,6 +18,9 @@ class templateInit {
 	private $template_tag_right = '}-->'; //右标签
 	private $is_compile 		= true; //是否需要每次编译
 	private $driver_config;
+	/**
+	 * @var \defaultInit|\simpleInit
+	 */
 	private static $driver      = NULL; //定义默认的一个模板编译驱动模型
 	
 	/**
@@ -56,7 +59,7 @@ class templateInit {
 	/**
 	 * 模板编译-模板类入口函数
 	 * 1. 获取模板，如果模板未编译，则编译
-	 * @param  string $filename 文件名称，例如：test，不带文件.htm类型
+	 * @param  string $file_name 文件名称，例如：test，不带文件.htm类型
 	 * @return string
 	 */
 	protected function template_run($file_name) {
@@ -74,8 +77,8 @@ class templateInit {
 	
 	/**
 	 * 模板编译-读取静态模板
-	 * @param  string $filename 文件名称，例如：test，不带文件.htm类型
-	 * @return 
+	 * @param  string $template_file_name 文件名称，例如：test，不带文件.htm类型
+	 * @return string
 	 */
 	private function read_template($template_file_name) {
 		if (!file_exists($template_file_name)) InitPHP::initError($template_file_name. ' is not exist!');
@@ -84,9 +87,8 @@ class templateInit {
 	
 	/**
 	 * 模板编译-编译模板
-	 * @param  string $filename 文件名称，例如：test，不带文件.htm类型
+	 * @param  string $compile_file_name 文件名称，例如：test，不带文件.htm类型
 	 * @param  string $str 写入编译文件的数据
-	 * @return 
 	 */
 	private function compile_template($compile_file_name, $str) {
 		if (($path = dirname($compile_file_name)) !== $this->template_c_path) { //自动创建文件夹
@@ -100,8 +102,8 @@ class templateInit {
 	
 	/**
 	 * 模板编译-通过传入的filename，获取要编译的静态页面和生成编译文件的文件名
-	 * @param  string $filename 文件名称，例如：test，不带文件.htm类型
-	 * @return 
+	 * @param  string $file_name 文件名称，例如：test，不带文件.htm类型
+	 * @return array
 	 */
 	private function get_file_name($file_name) {
 		return array(
@@ -112,7 +114,7 @@ class templateInit {
 	
 	/**
 	 * 模板编译-检测模板目录和编译目录是否可写
-	 * @return 
+	 * @return bool
 	 */
 	private function check_path() {
 		if (!is_dir($this->template_path) || !is_readable($this->template_path)) InitPHP::initError('template path is unread!');
@@ -123,6 +125,7 @@ class templateInit {
 	/**
 	 * 模板编译-编译文件-头部版本信息
 	 * @param  string $str 模板文件数据
+	 * @param string $template_file_name
 	 * @return string
 	 */
 	private function compile_version($str, $template_file_name) {
@@ -169,8 +172,8 @@ class templateInit {
 	
 	/**
 	 * 模板编译-获取不同
-	 * @param  string $template_name 模板名称
-	 * @return string
+	 * @param  string $driver 模板名称
+	 * @return \defaultInit|\simpleInit
 	 */
 	private function get_driver($driver) {
 		$diver_path = 'driver/' . $driver . '.init.php';
@@ -187,13 +190,11 @@ class templateInit {
 	/**
 	 *	创建目录
 	 * 	@param  string  $path   目录
-	 *  @return 
+	 *  @return bool
 	 */
 	private function create_dir($path) {
 		if (is_dir($path)) return false;
-		$this->create_dir(dirname($path));
-		@mkdir($path);
-		@chmod($path, 0777);
+		mkdir($path, 0777, true);
 		return true;
 	}
 
@@ -263,6 +264,7 @@ class viewInit extends templateInit {
 	 * 1. 在Controller中需要显示模板，就必须调用该函数
 	 * 2. 模板解析可以设置 $InitPHP_conf['isviewfilter'] 值,对变量进行过滤
 	 * Controller中使用方法：$this->view->display();
+	 * @param string $template
 	 * @return array
 	 */
 	public function display($template = '') {
@@ -304,7 +306,7 @@ class viewInit extends templateInit {
 	
 	/**
 	 * 模板-模板变量输出过滤
-	 * @param  array  $arr 视图存放器数组
+	 * @param  array  $value 视图存放器数组
 	 * @return array
 	 */
 	private function out_put(&$value) {

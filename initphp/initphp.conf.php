@@ -8,7 +8,7 @@
  * Author:zhuli Dtime:2014-11-25
  ***********************************************************************************/
 /* 框架全局配置常量 */ 
-define('INITPHP_PATH', dirname(__FILE__));
+define('INITPHP_PATH', __DIR__);
 define('IS_INITPHP', 1);
 error_reporting(E_ERROR | E_PARSE);
 /* 框架全局配置变量 */

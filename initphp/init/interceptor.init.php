@@ -40,7 +40,8 @@ class interceptorInit {
 
 	/**
 	 * 具体解析
-	 * @param unknown_type $isPre
+	 * @param bool $isPre
+	 * @return bool
 	 */
 	private function parse($isPre = true) {
 		$InitPHP_conf = InitPHP::getConfig();
