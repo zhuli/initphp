@@ -39,7 +39,7 @@ class cacheInit{
 	 * DAO中使用方法：$this->dao->cache->get_cache($key,$type = 'FILE')
 	 * @param  string $key   缓存键值
 	 * @param  string $type  缓存类型
-	 * @return 
+	 * @return mixed
 	 */
 	public function get($key, $type = 'FILE') {
 		$cache = $this->get_cache_handle($type);
@@ -52,7 +52,7 @@ class cacheInit{
 	 * DAO中使用方法：$this->dao->clear($key, $type = 'FILE')
 	 * @param  string $key   缓存键值
 	 * @param  string $type  缓存类型
-	 * @return 
+	 * @return bool
 	 */
 	public function clear($key, $type = 'FILE') {
 		$cache = $this->get_cache_handle($type);
@@ -64,7 +64,7 @@ class cacheInit{
 	 * 缓存类型
 	 * DAO中使用方法：$this->dao->clear_all($type = 'FILE')
 	 * @param  string $type  缓存类型
-	 * @return 
+	 * @return bool
 	 */
 	public function clear_all($type = 'FILE') {
 		$cache = $this->get_cache_handle($type);
@@ -75,7 +75,7 @@ class cacheInit{
 	 * 该接口获取缓存类接口
 	 * 支持通过该函数直接调用缓存中的私用方法（除了set get clear clear_all之外）
 	 * @param  string $type  缓存类型
-	 * @return 
+	 * @return filecacheInit|memcachedInit|mysqlcacheInit
 	 */
 	public function get_cache($type = 'MEM') {
 		return $this->get_cache_handle($type);
@@ -90,7 +90,7 @@ class cacheInit{
 	 * @param  string $value 缓存数据
 	 * @param  string $time  缓存时间
 	 * @param  string $type  缓存类型
-	 * @return 
+	 * @return null
 	 */
 	public function page_cache_start($key, $time = 0, $type = 'FILE') {
 		$this->page_cache_key 	= 'initphp_page_cache_' . $key;
@@ -119,7 +119,7 @@ class cacheInit{
 	/**
 	 * 缓存工厂-获取不同缓存类型的对象句柄
 	 * @param  string $type  缓存类型
-	 * @return obj
+	 * @return filecacheInit|memcachedInit|mysqlcacheInit
 	 */
 	private function get_cache_handle($type) {
 		$InitPHP_conf = InitPHP::getConfig(); //需要设置文件缓存目录
@@ -155,16 +155,19 @@ class cacheInit{
 			case 'APC' :
 				if (isset(cacheInit::$instance['apc'])) return cacheInit::$instance['apc'];
 				$filecache = $this->load_cache('apc.init.php', 'apcInit');
+				return $filecache;
 				break;
 			
 			case 'XCACHE' :
 				if (isset(cacheInit::$instance['xcache'])) return cacheInit::$instance['xcache'];
 				$filecache = $this->load_cache('xcache.init.php', 'xcacheInit');
+				return $filecache;
 				break;
-				
+			default:
 			case 'WINCACHE' :
 				if (isset(cacheInit::$instance['wincache'])) return cacheInit::$instance['wincache'];
 				$filecache = $this->load_cache('wincache.init.php', 'wincacheInit');
+				return $filecache;
 				break;
 		}
 	}
@@ -173,7 +176,7 @@ class cacheInit{
 	 * 缓存工厂-加载不同缓存类文件
 	 * @param  string $file  缓存文件名
 	 * @param  string $class 缓存类名
-	 * @return obj
+	 * @return filecacheInit|memcachedInit|mysqlcacheInit
 	 */
 	private function load_cache($file, $class) {
 		if (cacheInit::$instance['require'][$file] !== TRUE) {

@@ -59,7 +59,6 @@ class sessionInit {
 	/**
  	 * Session-清空session
   	 * 使用方法：$this->getUtil('session')->clear();
- 	 * @return   
 	 */
 	public function clear() {
 		if (!session_id()) $this->start();

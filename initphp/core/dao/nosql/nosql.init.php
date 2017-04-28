@@ -17,6 +17,8 @@ class nosqlInit {
 	/**
 	 * 获取Nosql对象
 	 * @param string $type
+	 * @param string $server
+	 * @return mongoInit|redisInit
 	 */
 	public function init($type = 'MONGO', $server = 'default') {
 		$InitPHP_conf = InitPHP::getConfig(); //需要设置文件缓存目录
@@ -31,8 +33,9 @@ class nosqlInit {
 				nosqlInit::$instance[$instance_name] = $mongo;
 				return $mongo;
 				break;
-			
+
 			case 'REDIS' :
+			default:
 				$instance_name = 'redis_' . $server;
 				if (isset(nosqlInit::$instance[$instance_name])) return nosqlInit::$instance[$instance_name];
 				$redis = $this->load_nosql('redis.init.php', 'redisInit', $server);
@@ -48,7 +51,7 @@ class nosqlInit {
 	 * @param  string $file  缓存文件名 
 	 * @param  string $class 缓存类名
 	 * @param  String $server 服务器
-	 * @return obj
+	 * @return mongoInit|redisInit
 	 */
 	private function load_nosql($file, $class, $server) {
 		if (nosqlInit::$instance['require'][$file] != TRUE) {

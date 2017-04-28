@@ -100,11 +100,8 @@ class fileInit {
 	 *  @return 
 	 */
 	public function create_dir($path) {
-		if (is_dir($path)) return false;
-		fileInit::create_dir(dirname($path));
-		@mkdir($path);
-		@chmod($path, 0777);
-		return true;
+		if (is_dir($path)) return true;
+		return mkdir($path, 0777, true) && chmod($path, 0777);
 	}
 	
 	/**
@@ -139,5 +136,4 @@ class fileInit {
 		}
 		return $succeed;
 	}
-}	
-?>
+}

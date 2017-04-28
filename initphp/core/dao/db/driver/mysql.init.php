@@ -21,7 +21,7 @@ class mysqlInit extends dbbaseInit{
 	 * @param  string $database 数据库
 	 * @param  string $charset 编码
 	 * @param  string $pconnect 是否持久链接
-	 * @return obj
+	 * @return resource
 	 */
 	public function connect($host, $user, $password, $database, $charset = 'utf8', $pconnect = 0) {
 		$link_id = ($pconnect == 0) ? mysql_connect($host, $user, $password, true) : mysql_pconnect($host, $user, $password);
@@ -34,7 +34,7 @@ class mysqlInit extends dbbaseInit{
 	/**
 	 * SQL执行器
 	 * @param  string $sql SQL语句
-	 * @return obj
+	 * @return resource
 	 */
 	public function query($sql) {
 		return mysql_query($sql, $this->link_id);
@@ -42,7 +42,7 @@ class mysqlInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的行数
-	 * @param $result 结果集
+	 * @param resource $result
 	 * @return array
 	 */
 	public function result($result, $num = 1) {
@@ -51,7 +51,7 @@ class mysqlInit extends dbbaseInit{
 		
 	/**
 	 * 从结果集中取得一行作为关联数组
-	 * @param $result 结果集
+	 * @param resource $result
 	 * @return array
 	 */
 	public function fetch_assoc($result) {
@@ -60,7 +60,7 @@ class mysqlInit extends dbbaseInit{
 	
 	/**
 	 * 从结果集中取得列信息并作为对象返回
-	 * @param  $result 结果集
+	 * @param  resource $result
 	 * @return array
 	 */
 	public function fetch_fields($result) {
@@ -69,7 +69,7 @@ class mysqlInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的行数
-	 * @param $result 结果集
+	 * @param resource $result
 	 * @return int
 	 */
 	public function num_rows($result) {
@@ -78,7 +78,7 @@ class mysqlInit extends dbbaseInit{
 	
 	/**
 	 * 结果集中的字段数量
-	 * @param $result 结果集
+	 * @param resource $result
 	 * @return int
 	 */
 	public function num_fields($result) {
@@ -87,7 +87,8 @@ class mysqlInit extends dbbaseInit{
 	
 	/**
 	 * 释放结果内存
-	 * @param obj $result 需要释放的对象
+	 * @param resource $result
+	 * @return bool
 	 */
 	public function free_result($result) {
 		return mysql_free_result($result);

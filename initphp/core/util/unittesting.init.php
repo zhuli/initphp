@@ -19,7 +19,6 @@ class unittestingInit {
 	/**
 	 *	系统自动加载InitPHP类库
 	 *  @param  string  $class_name  类名称
-	 *  @param  string  $type        类所属类型
 	 *  @return object
 	 */
 	public function run($file = '') {
@@ -61,6 +60,7 @@ class unittestingInit {
 	 *  @return object
 	 */
 	public function test($function) {
+		$result_test = false;
 		$InitPHP_conf = InitPHP::getConfig();
 		$obj = $this->get_service_obj();
 		if ($obj) {

@@ -12,23 +12,24 @@ if (!defined('IS_INITPHP')) exit('Access Denied!');
 class daoInit{
 	
 	/**
-	 * @var dbInit
+	 * @var \dbInit
 	 */
 	public $db = NULL;   
 	
 	/**
-	 * @var cacheInit
+	 * @var \cacheInit
 	 */
 	public $cache = NULL;  
 	
 	/**
-	 * @var nosqlInit
+	 * @var \nosqlInit
 	 */
 	public $nosql = NULL;
 	
 	/**
 	 * 运行数据库
 	 * 1. 初始化DB类  DAO中调用方法    $this->dao->db
+	 * @return \dbInit
 	 */
 	public function run_db() {
 		if ($this->db == NULL) {  
@@ -42,6 +43,7 @@ class daoInit{
 	/**
 	 * 运行缓存模型
 	 * 1. 初始化cache类  DAO中调用方法    $this->dao->cache
+	 * @return \cacheInit
 	 */
 	public function run_cache() {
 		if ($this->cache == NULL) {
@@ -55,6 +57,7 @@ class daoInit{
 	/**
 	 * 运行nosql
 	 * $this->getNosql()
+	 * @return \nosqlInit
 	 */
 	public function run_nosql() {
 		if ($this->nosql == NULL) {

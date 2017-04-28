@@ -15,7 +15,8 @@ class queueInit {
 	/**
  	 * 队列-设置值
  	 * 使用方法：$this->getUtil('queue')->set('ccccccc');
- 	 * @return string   
+	 * @param $val
+ 	 * @return string
 	 */
 	public function set($val) {
 		array_unshift(self::$queue, $val);

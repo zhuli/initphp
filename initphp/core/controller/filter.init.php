@@ -22,6 +22,8 @@ class filterInit extends validateInit {
 	 * @return string|array
 	 */
 	public function get_gp($value, $type = null,  $isfilter = false) {
+		$temp = null;
+		$requestData = [];
 		if ($type == 'U' || $type == 'D') {
 			parse_str(file_get_contents('php://input'), $requestData);
 		}
@@ -57,7 +59,6 @@ class filterInit extends validateInit {
 	 * 安全过滤类-全局变量过滤
 	 * 在Controller初始化的时候已经运行过该变量，对全局变量进行处理
 	 *  Controller中使用方法：$this->controller->filter()
-	 * @return
 	 */
 	public function filter() {
 		if (is_array($_SERVER)) {
@@ -79,10 +80,9 @@ class filterInit extends validateInit {
 	 * 安全过滤类-加反斜杠，放置SQL注入
 	 *  Controller中使用方法：$this->controller->filter_slashes(&$value)
 	 * @param  string $value 需要过滤的值
-	 * @return string
 	 */
 	public static function filter_slashes(&$value) {
-		if (get_magic_quotes_gpc()) return false; //开启魔术变量
+		if (get_magic_quotes_gpc()) return ; //开启魔术变量
 		$value = (array) $value;
 		foreach ($value as $key => $val) {
 			if (is_array($val)) {

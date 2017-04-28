@@ -168,6 +168,7 @@ class sqlbuildInit extends dbhandlerInit {
 	 * DAO中使用方法：$this->dao->db->build_key($data, $fields)
 	 * @param array $data  例如：array("username" => 'asdasd')
 	 * @param string $fields  例如："username,password"
+	 * @return array
 	 */
 	public function build_key($data, $fields) {
 		$fields = explode(',', $fields);

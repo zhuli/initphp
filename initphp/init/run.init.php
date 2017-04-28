@@ -32,7 +32,7 @@ class runInit {
 	 * 3. 运行前置Action
 	 * 4. 运行正常Action
 	 * 5. 运行后置Action
-	 * @return file
+	 * @return string file
 	 */
 	public function run() {
 		$InitPHP_conf = InitPHP::getConfig(); //全局配置
@@ -116,7 +116,6 @@ class runInit {
 	 * 3. 检测方法是否存在，不存在则运行默认的
 	 * 4. 运行函数
 	 * @param object $controller 控制器对象
-	 * @return file
 	 */
 	private function run_action($controller) {
 		$action = trim($_GET['a']);
@@ -133,7 +132,7 @@ class runInit {
 	 * 白名单参数支持指定GET POST PUT DEL 等HTTP METHOD操作
 	 * 白名单参数：array('test', 'user|post')
 	 * @param object $controller 控制器对象
-	 * @return file
+	 * @return array
 	 */
 	private function parseWhiteList($initphp_list) {
 		$whiteList = $methodList = array();
@@ -157,12 +156,13 @@ class runInit {
 	 * 1. 检测方法是否存在，不存在则运行默认的
 	 * 2. 运行函数
 	 * @param object $controller 控制器对象
-	 * @return file
+	 * @return bool
 	 */
 	private function run_before_action($controller) {
 		$before_action = $this->default_before_action . $this->action_postfix;
 		if (!method_exists($controller, $before_action)) return false;
 		$controller->$before_action();
+		return true;
 	}
 
 	/**
@@ -170,12 +170,13 @@ class runInit {
 	 * 1. 检测方法是否存在，不存在则运行默认的
 	 * 2. 运行函数
 	 * @param object $controller 控制器对象
-	 * @return file
+	 * @return bool
 	 */
 	private function run_after_action($controller) {
 		$after_action = $this->default_after_action . $this->action_postfix;
 		if (!method_exists($controller, $after_action)) return false;
 		$controller->$after_action();
+		return true;
 	}
 
 	/**
@@ -230,16 +231,21 @@ class runInit {
 		set_error_handler(array($this,'handleError'),error_reporting());
 	}
 
-	/*
-	 *设置异常处理函数,写入日志文件
+	/**
+	 * 设置异常处理函数,写入日志文件
+	 * @param $exception
 	 */
 	public function handleException($exception){
 		restore_exception_handler();
 		exceptionInit::errorTpl($exception);
 	}
 
-	/*
-	 *设置PHP错误处理回调函数,写入日志文件
+	/**
+	 * 设置PHP错误处理回调函数,写入日志文件
+	 * @param $errorCode
+	 * @param string $msg
+	 * @param string $errorFile
+	 * @param int $errorLine
 	 */
 	public function handleError($errorCode, $msg = '', $errorFile = 'unkwon', $errorLine = 0){
 		$InitPHP_conf = InitPHP::getConfig();

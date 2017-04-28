@@ -29,7 +29,7 @@ class controllerInit extends filterInit{
 	 * 	@param  int     $status  0:错误信息|1:正确信息
 	 * 	@param  string  $message  显示的信息
 	 * 	@param  array   $data    传输的信息
-	 * 	@param  array   $type    返回数据类型，json|xml|eval|jsonp
+	 * 	@param  string   $type    返回数据类型，json|xml|eval|jsonp
 	 *  @return object
 	 */
 	public function ajax_return($status, $message = '', $data = array(), $type = 'json') {
