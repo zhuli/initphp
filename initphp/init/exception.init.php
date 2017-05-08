@@ -17,7 +17,7 @@ class exceptionInit extends Exception{
 	 */
 	public static function cliErrorTpl($e) {
 		$InitPHP_conf = InitPHP::getConfig();
-		$msg = $e->message;
+		$msg = $e->getMessage();
 		$mainErrorCode = $e->getLineCode($e->getFile(), $e->getLine());
 		self::_recordError($msg,$e->getFile(),$e->getLine(),trim($mainErrorCode));
 		//如果debug关闭，则不显示debug错误信息
@@ -47,14 +47,14 @@ class exceptionInit extends Exception{
 	 */
 	public static function errorTpl($e) {
 		$InitPHP_conf = InitPHP::getConfig();
-		$msg = $e->message;
+		$msg = $e->getMessage();
 		$mainErrorCode = self::getLineCode($e->getFile(), $e->getLine());
 		self::_recordError($msg, $e->getFile(), $e->getLine(), trim($mainErrorCode));
 		if (!$InitPHP_conf['is_debug'] && $e->code == 10000) {
 			$msg = '系统繁忙，请稍后再试';
 		}
 		if (self::is_ajax()) {
-			$arr = array('status' => 0, 'message' => $msg, 'data' => array('code' => $e->code));
+			$arr = array('status' => 0, 'message' => $msg, 'data' => array('code' => $e->getCode()));
 			echo json_encode($arr);
 		} else {
 			//如果debug关闭，则不显示debug错误信息
