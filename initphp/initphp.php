@@ -767,6 +767,7 @@ class Dao extends coreInit {
 	 * 初始化
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->dao = $this->load('dao', 'd'); //导入D
 		$this->dao->run_db(); //初始化db
 		$this->dao->run_cache(); //初始化cahce
